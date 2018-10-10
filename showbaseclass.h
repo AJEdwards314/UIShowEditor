@@ -10,17 +10,24 @@ class ShowBaseClass : public QObject
     Q_OBJECT
 public:
     explicit ShowBaseClass(QObject *parent = nullptr, QString filename = ""); //Parent here will be a ShowPrimaryPanel
-    QString title;
+
+    //Saving functionality
     void save();
     void saveAs(QFile *newSourceFile);
+
+    //Accessors
     inline QString getFilename() {return filename;}
 protected:
+    //Key References
     ShowPrimaryPanel * parentPanel;
-    void setSourceFile(QFile *sourceFile);
     QFile *sourceFile;
+
+    //Attributes
+    QString title;
     QString filename;
 
-
+    //Functions
+    void setSourceFile(QFile *sourceFile);
 
 signals:
 

@@ -1,4 +1,4 @@
-#include "ledshowbarwidget.h"
+#include "ledtrack.h"
 #include <QTextStream>
 #include <QRegularExpression>
 #include <QPainter>
@@ -9,7 +9,7 @@
 #include "leddialog.h"
 #include "showprimarypanel.h"
 
-LEDShowBarWidget::LEDShowBarWidget(QWidget *parent, float pixpersec, QFile *sourceFile, int offset, QString port, QString colorName) : ShowBarWidget (parent, pixpersec, offset, sourceFile, port)
+LEDTrack::LEDTrack(QWidget *parent, float pixpersec, QFile *sourceFile, int offset, QString port, QString colorName) : Track (parent, pixpersec, offset, sourceFile, port)
 {
     if(sourceFile == nullptr) {
         qInfo() << "Source File Not Specified";
@@ -81,36 +81,7 @@ LEDShowBarWidget::LEDShowBarWidget(QWidget *parent, float pixpersec, QFile *sour
     updateSize();
 }
 
-void LEDShowBarWidget::paintEvent(QPaintEvent *event)
-{
-    event->accept();
-    ShowBarWidget::paintEvent(nullptr);
-    QPainter painter(this);
-    painter.setPen(color);
-    painter.setBrush(color);
-    QPointF prevPoint;
-    for(int i = 0; i < points.length(); i++) {
-        QPointF truePoint(SHOW_BAR_HANDLE_WIDTH + SHOW_BAR_INFO_WIDTH + augmentedOffset + (pixpersec * points[i].ms / 1000.0), (points[i].val ? .25 : .75) * (this->height()-2) + 1);
-        QRectF bounds(truePoint - QPointF(LED_SHOW_BAR_POINT_RAD,LED_SHOW_BAR_POINT_RAD), truePoint + QPointF(LED_SHOW_BAR_POINT_RAD,LED_SHOW_BAR_POINT_RAD));
-        //qInfo() << bounds;
-        painter.drawEllipse(bounds);
-        if(i != 0) {
-            QPointF intermediate(truePoint.x(), prevPoint.y());
-            painter.drawLine(prevPoint, intermediate);
-            painter.drawLine(intermediate, truePoint);
-        }
-        prevPoint = truePoint;
-    }
-}
-
-void LEDShowBarWidget::propertiesOpen()
-{
-    qInfo() << "Opening LED Properties";
-    LEDDialog *dialog = new LEDDialog(this, filename, title, offset, port, colorName);
-    dialog->show();
-}
-
-void LEDShowBarWidget::apply(QString name, int offset, QString port, QString colorName)
+void LEDTrack::apply(QString name, int offset, QString port, QString colorName)
 {
     bool showChange = false;
     bool trackChange = false;
@@ -139,18 +110,36 @@ void LEDShowBarWidget::apply(QString name, int offset, QString port, QString col
         this->setTrackChanged(true);
 }
 
-void LEDShowBarWidget::setColor(QString colorName)
+void LEDTrack::paintEvent(QPaintEvent *event)
 {
-    this->colorName = colorName;
-    if(colorName == "Green" || colorName == "green" || colorName == "g" || colorName == "G")
-        color = Qt::green;
-    else if(colorName == "Red" || colorName == "red" || colorName == "r" || colorName == "R")
-        color = Qt::red;
-    else if(colorName == "Blue" || colorName == "blue" || colorName == "b" || colorName == "B")
-        color = Qt::blue;
+    event->accept();
+    Track::paintEvent(nullptr);
+    QPainter painter(this);
+    painter.setPen(color);
+    painter.setBrush(color);
+    QPointF prevPoint;
+    for(int i = 0; i < points.length(); i++) {
+        QPointF truePoint(TRACK_HANDLE_WIDTH + TRACK_INFO_WIDTH + augmentedOffset + (pixpersec * points[i].ms / 1000.0), (points[i].val ? .25 : .75) * (this->height()-2) + 1);
+        QRectF bounds(truePoint - QPointF(LED_TRACK_POINT_RAD,LED_TRACK_POINT_RAD), truePoint + QPointF(LED_TRACK_POINT_RAD,LED_TRACK_POINT_RAD));
+        //qInfo() << bounds;
+        painter.drawEllipse(bounds);
+        if(i != 0) {
+            QPointF intermediate(truePoint.x(), prevPoint.y());
+            painter.drawLine(prevPoint, intermediate);
+            painter.drawLine(intermediate, truePoint);
+        }
+        prevPoint = truePoint;
+    }
 }
 
-void LEDShowBarWidget::saveTrack()
+void LEDTrack::propertiesOpen()
+{
+    qInfo() << "Opening LED Properties";
+    LEDDialog *dialog = new LEDDialog(this, filename, title, offset, port, colorName);
+    dialog->show();
+}
+
+void LEDTrack::saveTrack()
 {
     sourceFile->open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream out(sourceFile);
@@ -164,7 +153,7 @@ void LEDShowBarWidget::saveTrack()
     sourceFile->close();
 }
 
-void LEDShowBarWidget::saveTrackAs()
+void LEDTrack::saveTrackAs()
 {
     QString newFilepath = QFileDialog::getSaveFileName(this, tr("Save Track"),"",tr("Animaniacs LED Files (*.lsr)"));
     if(newFilepath == "")
@@ -173,4 +162,14 @@ void LEDShowBarWidget::saveTrackAs()
     saveTrack();
 }
 
+void LEDTrack::setColor(QString colorName)
+{
+    this->colorName = colorName;
+    if(colorName == "Green" || colorName == "green" || colorName == "g" || colorName == "G")
+        color = Qt::green;
+    else if(colorName == "Red" || colorName == "red" || colorName == "r" || colorName == "R")
+        color = Qt::red;
+    else if(colorName == "Blue" || colorName == "blue" || colorName == "b" || colorName == "B")
+        color = Qt::blue;
+}
 

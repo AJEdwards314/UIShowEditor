@@ -5,10 +5,10 @@
 #include <QFileInfo>
 #include <QDebug>
 #include "showprimarypanel.h"
-#include "showbarwidget.h"
-#include "ledshowbarwidget.h"
-#include "motorshowbarwidget.h"
-#include "wavshowbarwidget.h"
+#include "track.h"
+#include "ledtrack.h"
+#include "motortrack.h"
+#include "wavtrack.h"
 
 ShowBaseClass::ShowBaseClass(QObject *parent, QString filepath) : QObject(parent)
 {
@@ -63,31 +63,31 @@ ShowBaseClass::ShowBaseClass(QObject *parent, QString filepath) : QObject(parent
 
 void ShowBaseClass::save()
 {
-    QList<ShowBarWidget*>* showBars = parentPanel->getShowBars();
-    for(int i = 0; i < showBars->length(); i++) {
-        if(showBars->at(i)->getTrackChanged())
-            showBars->at(i)->saveTrackParent();
+    QList<Track*>* tracks = parentPanel->getTracks();
+    for(int i = 0; i < tracks->length(); i++) {
+        if(tracks->at(i)->getTrackChanged())
+            tracks->at(i)->saveTrackParent();
     }
 
     sourceFile->open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream out(sourceFile);
     out << "Title," << title << "\n";
     out << "Tracks\n";
-    for(int i = 0; i < showBars->length(); i++) {
-        ShowBarWidget* showBar = showBars->at(i);
-        out << showBar->getFilename() << ",";
-        out << showBar->getOffset() << ",";
-        out << showBar->getPort();
-        LEDShowBarWidget* ledShowBar;
-        MotorShowBarWidget* motorShowBar;
-        if(ledShowBar = dynamic_cast<LEDShowBarWidget*>(showBar)) {
-            qInfo() << "LED Bar: " << ledShowBar->getFilename();
-            out << "," << ledShowBar->getColorName();
-        } else if(motorShowBar = dynamic_cast<MotorShowBarWidget*>(showBar)) {
-            qInfo() << "Motor Bar: " << motorShowBar->getFilename();
-            out << "," << (motorShowBar->getReverse() ? 1 : 0);
+    for(int i = 0; i < tracks->length(); i++) {
+        Track* track = tracks->at(i);
+        out << track->getFilename() << ",";
+        out << track->getOffset() << ",";
+        out << track->getPort();
+        LEDTrack* ledTrack;
+        MotorTrack* motorTrack;
+        if((ledTrack = dynamic_cast<LEDTrack*>(track))) {
+            qInfo() << "LED Bar: " << ledTrack->getFilename();
+            out << "," << ledTrack->getColorName();
+        } else if((motorTrack = dynamic_cast<MotorTrack*>(track))) {
+            qInfo() << "Motor Bar: " << motorTrack->getFilename();
+            out << "," << (motorTrack->getReverse() ? 1 : 0);
         } else {
-            qInfo() << "WAV Bar: " << showBar->getFilename();
+            qInfo() << "WAV Bar: " << track->getFilename();
         }
         out << "\n";
     }

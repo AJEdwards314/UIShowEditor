@@ -17,7 +17,6 @@ public:
     explicit ShowEditorWindow(QWidget *parent = nullptr);
     ~ShowEditorWindow() override;
 
-
 private slots:
     void on_actionNew_triggered();
 
@@ -30,6 +29,7 @@ private slots:
     void on_actionSave_As_triggered();
 
 private:
+    //Key References
     Ui::ShowEditorWindow *ui;
     ShowPrimaryPanel *panel;
 };

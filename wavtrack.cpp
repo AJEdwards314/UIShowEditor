@@ -1,4 +1,4 @@
-#include "wavshowbarwidget.h"
+#include "wavtrack.h"
 #include <QPainter>
 #include <QPaintEvent>
 #include <QDebug>
@@ -8,8 +8,8 @@
 #include "wavdialog.h"
 #include "showprimarypanel.h"
 
-WAVShowBarWidget::WAVShowBarWidget(QWidget *parent, float pixpersec, QFile *sourceFile, int offset, QString port)
-    : ShowBarWidget (parent, pixpersec, offset, sourceFile, port)
+WAVTrack::WAVTrack(QWidget *parent, float pixpersec, QFile *sourceFile, int offset, QString port)
+    : Track (parent, pixpersec, offset, sourceFile, port)
 {
     needs_repaint = true;
     if(sourceFile == nullptr) {
@@ -96,9 +96,76 @@ WAVShowBarWidget::WAVShowBarWidget(QWidget *parent, float pixpersec, QFile *sour
     updateSize();
 }
 
-void WAVShowBarWidget::repaintWAV() {
-    pixmap = QPixmap(samples.length() / WAV_SHOW_PNT_DENSITY, this->height());
+void WAVTrack::apply(int offset, QString port)
+{
+    bool showChange = false;
 
+    if(this->offset != offset)
+        showChange = true;
+    setOffset(offset);
+
+    if(this->port != port)
+        showChange = true;
+    this->port = port;
+
+    update();
+    parentPanel->trackShowDataUpdated();
+}
+
+void WAVTrack::paintEvent(QPaintEvent *event)
+{
+    event->accept();
+    Track::paintEvent(event);
+    QPainter painter(this);
+    QRect size(TRACK_HANDLE_WIDTH + TRACK_INFO_WIDTH + augmentedOffset,0, length * pixpersec / 1000, this->height());
+    painter.setPen(Qt::black);
+    painter.setBrush(Qt::black);
+    painter.drawPixmap(size, pixmap, pixmap.rect());
+    qInfo() << pixmap.rect();
+    if(needs_repaint) {
+        repaintWAV();
+        needs_repaint = false; // Do this once.  Time consuming.  Unless track updated.
+    }
+}
+
+void WAVTrack::propertiesOpen()
+{
+    qInfo() << "Opening WAV Properties";
+    WAVDialog *dialog = new WAVDialog(this, filename, offset, port);
+    dialog->show();
+}
+
+void WAVTrack::saveTrack()
+{
+    QMessageBox msgBox;
+    msgBox.setText("No Point Saving a WAV File.");
+    msgBox.setInformativeText("Would you like to Save As instead??");
+    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Ok);
+    int ret = msgBox.exec();
+    switch(ret) {
+    case QMessageBox::Ok:
+        saveTrackAs();
+        break;
+    }
+}
+
+void WAVTrack::saveTrackAs()
+{
+    QString newFilepath = QFileDialog::getSaveFileName(this, tr("Save Track"),"",tr("WAV Files (*.wav)"));
+    qInfo() << "Dialog Returned";
+    if(newFilepath == "") {
+        return;
+    }
+    QString currentFilepath = QFileInfo(*sourceFile).absoluteFilePath();
+    QFile::remove(newFilepath);
+    QFile::copy(currentFilepath, newFilepath);
+    this->setSourceFile(new QFile(newFilepath));
+}
+
+void WAVTrack::repaintWAV()
+{
+    pixmap = QPixmap(samples.length() / WAV_SHOW_PNT_DENSITY, this->height());
     pixmap.fill(Qt::transparent);
     //pixmap.fill(Qt::blue);
     QPainter painter(&pixmap);
@@ -122,69 +189,4 @@ void WAVShowBarWidget::repaintWAV() {
     qInfo() << samples.length() / WAV_SHOW_PNT_DENSITY;
 }
 
-void WAVShowBarWidget::paintEvent(QPaintEvent *event)
-{
-    event->accept();
-    ShowBarWidget::paintEvent(event);
-    QPainter painter(this);
-    QRect size(SHOW_BAR_HANDLE_WIDTH + SHOW_BAR_INFO_WIDTH + augmentedOffset,0, length * pixpersec / 1000, this->height());
-    painter.setPen(Qt::black);
-    painter.setBrush(Qt::black);
-    painter.drawPixmap(size, pixmap, pixmap.rect());
-    qInfo() << pixmap.rect();
-    if(needs_repaint) {
-        repaintWAV();
-        needs_repaint = false; // Do this once.  Time consuming.  Unless track updated.
-    }
-}
 
-void WAVShowBarWidget::propertiesOpen()
-{
-    qInfo() << "Opening WAV Properties";
-    WAVDialog *dialog = new WAVDialog(this, filename, offset, port);
-    dialog->show();
-}
-
-void WAVShowBarWidget::apply(int offset, QString port)
-{
-    bool showChange = false;
-
-    if(this->offset != offset)
-        showChange = true;
-    setOffset(offset);
-
-    if(this->port != port)
-        showChange = true;
-    this->port = port;
-
-    update();
-    parentPanel->trackShowDataUpdated();
-}
-
-void WAVShowBarWidget::saveTrack()
-{
-    QMessageBox msgBox;
-    msgBox.setText("No Point Saving a WAV File.");
-    msgBox.setInformativeText("Would you like to Save As instead??");
-    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-    msgBox.setDefaultButton(QMessageBox::Ok);
-    int ret = msgBox.exec();
-    switch(ret) {
-    case QMessageBox::Ok:
-        saveTrackAs();
-        break;
-    }
-}
-
-void WAVShowBarWidget::saveTrackAs()
-{
-    QString newFilepath = QFileDialog::getSaveFileName(this, tr("Save Track"),"",tr("WAV Files (*.wav)"));
-    qInfo() << "Dialog Returned";
-    if(newFilepath == "") {
-        return;
-    }
-    QString currentFilepath = QFileInfo(*sourceFile).absoluteFilePath();
-    QFile::remove(newFilepath);
-    QFile::copy(currentFilepath, newFilepath);
-    this->setSourceFile(new QFile(newFilepath));
-}

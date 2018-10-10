@@ -1,6 +1,6 @@
 #include "leddialog.h"
 #include "ui_leddialog.h"
-#include "ledshowbarwidget.h"
+#include "ledtrack.h"
 
 #include <QAbstractButton>
 #include <QDebug>
@@ -9,7 +9,7 @@ LEDDialog::LEDDialog(QWidget *parent, QString filename, QString name, int offset
     QDialog(parent),
     ui(new Ui::LEDDialog)
 {
-    parentShowBar = (LEDShowBarWidget*) parent;
+    parentTrack = (LEDTrack*) parent;
     ui->setupUi(this);
     ui->filenameLbl->setText(filename);
     ui->nameBox->setText(name);
@@ -37,5 +37,5 @@ void LEDDialog::on_buttonBox_clicked(QAbstractButton *button)
 
 void LEDDialog::applyToParent()
 {
-    parentShowBar->apply(ui->nameBox->text(), ui->offsetBox->text().toInt(), ui->portBox->text(), ui->colorBox->text());
+    parentTrack->apply(ui->nameBox->text(), ui->offsetBox->text().toInt(), ui->portBox->text(), ui->colorBox->text());
 }

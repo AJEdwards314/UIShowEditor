@@ -1,6 +1,6 @@
 #include "showeditorwindow.h"
 #include "ui_showeditorwindow.h"
-#include "showbarwidget.h"
+#include "track.h"
 #include "showprimarypanel.h"
 #include "showbaseclass.h"
 #include <QFileDialog>

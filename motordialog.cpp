@@ -1,6 +1,6 @@
 #include "motordialog.h"
 #include "ui_motordialog.h"
-#include "motorshowbarwidget.h"
+#include "motortrack.h"
 
 #include <QAbstractButton>
 #include <QDebug>
@@ -9,7 +9,7 @@ MotorDialog::MotorDialog(QWidget *parent, QString filename, QString name, int of
     QDialog(parent),
     ui(new Ui::MotorDialog)
 {
-    parentShowBar = (MotorShowBarWidget*) parent;
+    parentTrack = (MotorTrack*) parent;
     ui->setupUi(this);
     ui->filenameLbl->setText(filename);
     ui->nameBox->setText(name);
@@ -40,5 +40,5 @@ void MotorDialog::on_buttonBox_clicked(QAbstractButton *button)
 
 void MotorDialog::applyToParent()
 {
-    parentShowBar->apply(ui->nameBox->text(), ui->offsetBox->text().toInt(), ui->portBox->text(), ui->maxBox->text().toInt(), ui->minBox->text().toInt(), ui->defaultBox->text().toInt(), ui->reverseBox->checkState() == Qt::Checked);
+    parentTrack->apply(ui->nameBox->text(), ui->offsetBox->text().toInt(), ui->portBox->text(), ui->maxBox->text().toInt(), ui->minBox->text().toInt(), ui->defaultBox->text().toInt(), ui->reverseBox->checkState() == Qt::Checked);
 }

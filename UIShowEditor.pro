@@ -25,28 +25,27 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
         showeditorwindow.cpp \
-    showbarwidget.cpp \
     showprimarypanel.cpp \
-    motorshowbarwidget.cpp \
-    ledshowbarwidget.cpp \
     showbaseclass.cpp \
-    wavshowbarwidget.cpp \
     leddialog.cpp \
     motordialog.cpp \
-    wavdialog.cpp
+    wavdialog.cpp \
+    ledtrack.cpp \
+    motortrack.cpp \
+    wavtrack.cpp \
+    track.cpp
 
 HEADERS += \
         showeditorwindow.h \
-    showbarwidget.h \
     showprimarypanel.h \
-    motorshowbarwidget.h \
-    ledshowbarwidget.h \
     showbaseclass.h \
-    wavshowbarwidget.h \
-    ledproperties.h \
     leddialog.h \
     motordialog.h \
-    wavdialog.h
+    wavdialog.h \
+    ledtrack.h \
+    motortrack.h \
+    track.h \
+    wavtrack.h
 
 FORMS += \
         showeditorwindow.ui \

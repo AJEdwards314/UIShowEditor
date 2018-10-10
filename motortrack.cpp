@@ -1,4 +1,4 @@
-#include "motorshowbarwidget.h"
+#include "motortrack.h"
 
 #include <QTextStream>
 #include <QRegularExpression>
@@ -11,7 +11,7 @@
 #include "motordialog.h"
 #include "showprimarypanel.h"
 
-MotorShowBarWidget::MotorShowBarWidget(QWidget *parent, float pixpersec, QFile *sourceFile, int offset, QString port, bool reverse) : ShowBarWidget (parent, pixpersec, offset, sourceFile, port)
+MotorTrack::MotorTrack(QWidget *parent, float pixpersec, QFile *sourceFile, int offset, QString port, bool reverse) : Track (parent, pixpersec, offset, sourceFile, port)
 {
     if(sourceFile == nullptr) {
         qInfo("Source File Not Specified");
@@ -90,38 +90,7 @@ MotorShowBarWidget::MotorShowBarWidget(QWidget *parent, float pixpersec, QFile *
     updateSize();
 }
 
-void MotorShowBarWidget::paintEvent(QPaintEvent *event)
-{
-    event->accept();
-    ShowBarWidget::paintEvent(nullptr);
-    QPainter painter(this);
-    painter.setBrush(Qt::black);
-    painter.setPen(QPen(Qt::black, 0, Qt::DashLine));
-    painter.drawLine(SHOW_BAR_HANDLE_WIDTH + SHOW_BAR_INFO_WIDTH + augmentedOffset,
-                     ((float)((maxVal + 20) - midVal))/((maxVal + 20) - (minVal - 20)) * (this->height()-2) + 1,
-                     SHOW_BAR_HANDLE_WIDTH + SHOW_BAR_INFO_WIDTH + augmentedOffset + augmentedLength,
-                     ((float)((maxVal + 20) - midVal))/((maxVal + 20) - (minVal - 20)) * (this->height()-2) + 1);
-    painter.setPen(QPen(Qt::black));
-    QPointF prevPoint;
-    for(int i = 0; i < points.length(); i++) {
-        QPointF truePoint(SHOW_BAR_HANDLE_WIDTH + SHOW_BAR_INFO_WIDTH + augmentedOffset + (pixpersec * points[i].ms / 1000.0), ((float)((maxVal + 20) - points[i].val))/((maxVal + 20) - (minVal - 20)) * (this->height()-2) + 1);
-        QRectF bounds(truePoint - QPointF(MOTOR_SHOW_BAR_POINT_RAD,MOTOR_SHOW_BAR_POINT_RAD), truePoint + QPointF(MOTOR_SHOW_BAR_POINT_RAD,MOTOR_SHOW_BAR_POINT_RAD));
-        //qInfo() << bounds;
-        painter.drawEllipse(bounds);
-        if(i != 0)
-            painter.drawLine(prevPoint, truePoint);
-        prevPoint = truePoint;
-    }
-}
-
-void MotorShowBarWidget::propertiesOpen()
-{
-    qInfo() << "Opening Motor Properties";
-    MotorDialog *dialog = new MotorDialog(this, filename, title, offset, port, maxVal, minVal, midVal, reverse);
-    dialog->show();
-}
-
-void MotorShowBarWidget::apply(QString name, int offset, QString port, int maxVal, int minVal, int defVal, bool reverse)
+void MotorTrack::apply(QString name, int offset, QString port, int maxVal, int minVal, int defVal, bool reverse)
 {
     bool showChange = false;
     bool trackChange = false;
@@ -162,7 +131,38 @@ void MotorShowBarWidget::apply(QString name, int offset, QString port, int maxVa
         this->setTrackChanged(true);
 }
 
-void MotorShowBarWidget::saveTrack()
+void MotorTrack::paintEvent(QPaintEvent *event)
+{
+    event->accept();
+    Track::paintEvent(nullptr);
+    QPainter painter(this);
+    painter.setBrush(Qt::black);
+    painter.setPen(QPen(Qt::black, 0, Qt::DashLine));
+    painter.drawLine(TRACK_HANDLE_WIDTH + TRACK_INFO_WIDTH + augmentedOffset,
+                     ((float)((maxVal + 20) - midVal))/((maxVal + 20) - (minVal - 20)) * (this->height()-2) + 1,
+                     TRACK_HANDLE_WIDTH + TRACK_INFO_WIDTH + augmentedOffset + augmentedLength,
+                     ((float)((maxVal + 20) - midVal))/((maxVal + 20) - (minVal - 20)) * (this->height()-2) + 1);
+    painter.setPen(QPen(Qt::black));
+    QPointF prevPoint;
+    for(int i = 0; i < points.length(); i++) {
+        QPointF truePoint(TRACK_HANDLE_WIDTH + TRACK_INFO_WIDTH + augmentedOffset + (pixpersec * points[i].ms / 1000.0), ((float)((maxVal + 20) - points[i].val))/((maxVal + 20) - (minVal - 20)) * (this->height()-2) + 1);
+        QRectF bounds(truePoint - QPointF(MOTOR_TRACK_POINT_RAD,MOTOR_TRACK_POINT_RAD), truePoint + QPointF(MOTOR_TRACK_POINT_RAD,MOTOR_TRACK_POINT_RAD));
+        //qInfo() << bounds;
+        painter.drawEllipse(bounds);
+        if(i != 0)
+            painter.drawLine(prevPoint, truePoint);
+        prevPoint = truePoint;
+    }
+}
+
+void MotorTrack::propertiesOpen()
+{
+    qInfo() << "Opening Motor Properties";
+    MotorDialog *dialog = new MotorDialog(this, filename, title, offset, port, maxVal, minVal, midVal, reverse);
+    dialog->show();
+}
+
+void MotorTrack::saveTrack()
 {
     sourceFile->open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream out(sourceFile);
@@ -179,7 +179,7 @@ void MotorShowBarWidget::saveTrack()
     sourceFile->close();
 }
 
-void MotorShowBarWidget::saveTrackAs()
+void MotorTrack::saveTrackAs()
 {
     QString newFilepath = QFileDialog::getSaveFileName(this, tr("Save Track"),"",tr("Animaniacs Motor Files (*.osr)"));
     if(newFilepath == "")

@@ -4,7 +4,7 @@
 #include <QDialog>
 
 class QAbstractButton;
-class MotorShowBarWidget;
+class MotorTrack;
 
 namespace Ui {
 class MotorDialog;
@@ -19,7 +19,7 @@ public:
     ~MotorDialog();
 
 protected:
-    MotorShowBarWidget *parentShowBar;
+    MotorTrack *parentTrack; //Reference to Parent - API through apply function
 
 private slots:
     void on_buttonBox_accepted();

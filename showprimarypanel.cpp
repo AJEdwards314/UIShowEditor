@@ -10,12 +10,12 @@
 #include <QFileInfo>
 #include <QDragMoveEvent>
 #include <QMessageBox>
-#include "showbarwidget.h"
-#include "motorshowbarwidget.h"
-#include "ledshowbarwidget.h"
+#include "track.h"
+#include "motortrack.h"
+#include "ledtrack.h"
 #include "showbaseclass.h"
 #include "showeditorwindow.h"
-#include "wavshowbarwidget.h"
+#include "wavtrack.h"
 
 
 ShowPrimaryPanel::ShowPrimaryPanel(QWidget *parent) : QWidget(parent)
@@ -23,144 +23,12 @@ ShowPrimaryPanel::ShowPrimaryPanel(QWidget *parent) : QWidget(parent)
     //this->setMouseTracking(true);
     this->setAcceptDrops(true);
     //this->setMinimumWidth(1500);
-    showBars = new QList<ShowBarWidget*>();
+    tracks = new QList<Track*>();
     parentWindow = (ShowEditorWindow*)parent;
     showBase = nullptr;
     new QVBoxLayout(this); //Creates Vertical Layout for Panel
-    /*for(int i = 0; i < 10; i++) {
-        ShowBarWidget *bar =  new ShowBarWidget(this, pixpersec, i, "abcdef", i*1000);
-        layout()->addWidget(bar);
-        showBars->append(bar);
-    }*/
 
-    /*QFile file("C:\\Users\\alex\\OneDrive\\Documents\\Systems\\UI Test\\Test Files\\TestWav.wav");
-    ShowBarWidget *bar = new WAVShowBarWidget(this,pixpersec, &file);
-    layout()->addWidget(bar);
-    showBars->append(bar);
-    updateChildren();*/
-    /*QFile file("C:\\Users\\alex\\OneDrive\\Documents\\Systems\\UI Test\\Test Files\\test_track.osr");
-    ShowBarWidget *bar = new MotorShowBarWidget(this, pixpersec, &file);
-    layout()->addWidget(bar);
-    showBars->append(bar);
-
-    QFile file2("C:\\Users\\alex\\OneDrive\\Documents\\Systems\\UI Test\\Test Files\\test_led_track.lsr");
-    bar = new LEDShowBarWidget(this, pixpersec, &file2);
-    layout()->addWidget(bar);
-    showBars->append(bar);
-    updateChildren();*/
     updateTitle();
-}
-
-void ShowPrimaryPanel::objectGrabbed(ShowBarWidget* widget)
-{
-    grabbedShowBar = widget;
-    originalSlot = showBars->indexOf(widget);
-    currentSlot = originalSlot;
-    showBars->removeOne(widget);
-}
-
-void ShowPrimaryPanel::dragMoveEvent(QDragMoveEvent *event)
-{
-    event->accept();
-    currentSlot = calculateSlot(event->pos());
-    repaint();
-}
-
-int ShowPrimaryPanel::calculateSlot(QPoint p)
-{
-    for(int i = 0; i <= showBars->length(); i++) {
-        if(i == 0) {
-            if(p.y() < showBars->at(i)->pos().y())
-                return i;
-        } else if(i == showBars->length()) {
-            if(p.y() > showBars->at(i-1)->geometry().bottomRight().y())
-                return i;
-        } else {
-            if(p.y() < showBars->at(i)->pos().y() && p.y() > showBars->at(i-1)->geometry().bottomRight().y())
-                return i;
-        }
-    }
-    return -1;
-}
-
-void ShowPrimaryPanel::dragEnterEvent(QDragEnterEvent *event)
-{
-    event->accept();
-}
-
-void ShowPrimaryPanel::dropEvent(QDropEvent *event)
-{
-    event->acceptProposedAction();
-    if(currentSlot == -1)
-        currentSlot = originalSlot;
-    placeAtSlot(grabbedShowBar, currentSlot);
-    grabbedShowBar = nullptr;
-    currentSlot = -1;
-    originalSlot = -1;
-    repaint();
-}
-
-void ShowPrimaryPanel::placeAtSlot(ShowBarWidget *showBar, int index)
-{
-    for(int i = index; i < showBars->length(); i++)
-    {
-        layout()->removeWidget(showBars->at(i));
-    }
-    showBar->setVisible(true);
-    showBars->insert(index, showBar);
-    for(int i = index; i < showBars->length(); i++) {
-        layout()->addWidget(showBars->at(i));
-    }
-}
-
-void ShowPrimaryPanel::paintEvent(QPaintEvent *)
-{
-    QPainter painter(this);
-    if(currentSlot != -1) {
-        QRectF rect;
-        if(currentSlot == 0)
-            rect = QRectF(0, 0, grabbedShowBar->width(), showBars->at(currentSlot)->pos().y());
-        else if(currentSlot == showBars->length())
-            rect = QRectF(0, showBars->at(currentSlot - 1)->geometry().bottomRight().y(), grabbedShowBar->width(), height() - showBars->at(currentSlot - 1)->geometry().bottomRight().y());
-        else
-            rect = QRectF(0, showBars->at(currentSlot - 1)->geometry().bottomRight().y(), grabbedShowBar->width(), showBars->at(currentSlot)->pos().y() - showBars->at(currentSlot - 1)->geometry().bottomRight().y());
-        painter.setBrush(Qt::magenta);
-        painter.drawRect(rect);
-    }// else {
-    //    QRectF size(0, 0, this->width(), this->height());
-    //    painter.setBrush(QColor(255, 255, 240));
-    //    painter.setPen(Qt::transparent);
-    //    painter.drawRect(size);
-    //}
-}
-
-void ShowPrimaryPanel::wheelEvent(QWheelEvent *event)
-{
-    if(QApplication::queryKeyboardModifiers() & Qt::ControlModifier)
-        event->accept();
-    else
-        return;
-
-    if(event->delta() > 0)
-        pixpersec *= 1.5;
-    else
-        pixpersec /= 1.5;
-    updateChildren();
-}
-
-void ShowPrimaryPanel::updateChildren()
-{
-    for(int i = 0; i < showBars->length(); i++) {
-        showBars->at(i)->setScale(pixpersec, 0);
-    }
-    int maxWidth = 0;
-    for(int i = 0; i < showBars->length(); i++) {
-        maxWidth = qMax(showBars->at(i)->getBaseWidth(), maxWidth);
-
-    }
-    for(int i = 0; i < showBars->length(); i++) {
-        showBars->at(i)->setScale(pixpersec, maxWidth);
-    }
 }
 
 void ShowPrimaryPanel::openShow(QString filename)
@@ -169,6 +37,11 @@ void ShowPrimaryPanel::openShow(QString filename)
     QFile file(filename);
     this->showBase = new ShowBaseClass(this, filename);
     updateTitle();
+}
+
+void ShowPrimaryPanel::createEmptyShow()
+{
+    this->showBase = new ShowBaseClass(this);
 }
 
 void ShowPrimaryPanel::newShow()
@@ -190,12 +63,12 @@ void ShowPrimaryPanel::newShow()
         }
     }
 
-    for(int i = 0; i < showBars->length(); i++)  //Remove all currently loaded ShowBars
+    for(int i = 0; i < tracks->length(); i++)  //Remove all currently loaded Tracks
     {
-        layout()->removeWidget(showBars->at(i));
-        showBars->at(i)->hide();
+        layout()->removeWidget(tracks->at(i));
+        tracks->at(i)->hide();
     }
-    showBars->clear();
+    tracks->clear();
     showBase = nullptr;
     showChanged = false;
     updateTitle();
@@ -207,7 +80,7 @@ void ShowPrimaryPanel::openTracks(QStringList &filenames, QList<int> * offsets, 
     {
         QFileInfo fileinfo(filenames[i]);
         QFile *file = new QFile(filenames[i]);
-        ShowBarWidget *bar = nullptr;
+        Track *bar = nullptr;
         //TODO add file extension error checking
         int offset = 0;
         QString port = "";
@@ -221,23 +94,23 @@ void ShowPrimaryPanel::openTracks(QStringList &filenames, QList<int> * offsets, 
             currentArgs = args->at(i);
         if(fileinfo.suffix() == "lsr") {
             if(currentArgs.length() == 0)
-                bar = new LEDShowBarWidget(this, pixpersec, file, offset, port, "Green");
+                bar = new LEDTrack(this, pixpersec, file, offset, port, "Green");
             else {
                 QString colorName = currentArgs[0];
-                bar = new LEDShowBarWidget(this, pixpersec, file, offset, port, colorName );
+                bar = new LEDTrack(this, pixpersec, file, offset, port, colorName );
             }
         } else if(fileinfo.suffix() == "osr") {
             if(currentArgs.length() == 0)
-                bar = new MotorShowBarWidget(this, pixpersec, file, offset, port);
+                bar = new MotorTrack(this, pixpersec, file, offset, port);
             else {
                 bool reverse = currentArgs[0] != "0";
-                bar = new MotorShowBarWidget(this, pixpersec, file, offset, port, reverse);
+                bar = new MotorTrack(this, pixpersec, file, offset, port, reverse);
             }
         } else {
-            bar = new WAVShowBarWidget(this, pixpersec, file, offset, port); //TODO .WAV
+            bar = new WAVTrack(this, pixpersec, file, offset, port); //TODO .WAV
         }
         layout()->addWidget(bar);
-        showBars->append(bar);
+        tracks->append(bar);
         updateChildren();
         trackShowDataUpdated();
     }
@@ -245,21 +118,20 @@ void ShowPrimaryPanel::openTracks(QStringList &filenames, QList<int> * offsets, 
 
 }
 
-void ShowPrimaryPanel::updateTitle()
+void ShowPrimaryPanel::trackShowDataUpdated()
 {
     if(showBase != nullptr) {
-        if(showChanged)
-            parentWindow->setWindowTitle(showBase->getFilename() + "* - Animaniacs Show Builder");
-        else
-            parentWindow->setWindowTitle(showBase->getFilename() + " - Animaniacs Show Builder");
-    } else {
-        parentWindow->setWindowTitle("unsaved - Animaniacs Show Builder");
+        showChanged = true;
+        updateTitle();
     }
 }
 
-void ShowPrimaryPanel::createEmptyShow()
+void ShowPrimaryPanel::removeTrack(Track *track)
 {
-    this->showBase = new ShowBaseClass(this);
+    layout()->removeWidget(track);
+    tracks->removeAll(track);
+    track->hide();
+    showChanged = true;
 }
 
 void ShowPrimaryPanel::save()
@@ -276,18 +148,132 @@ void ShowPrimaryPanel::saveAs(QFile * newSourceFile)
     updateTitle();
 }
 
-void ShowPrimaryPanel::trackShowDataUpdated()
+void ShowPrimaryPanel::updateTitle()
 {
     if(showBase != nullptr) {
-        showChanged = true;
-        updateTitle();
+        if(showChanged)
+            parentWindow->setWindowTitle(showBase->getFilename() + "* - Animaniacs Show Builder");
+        else
+            parentWindow->setWindowTitle(showBase->getFilename() + " - Animaniacs Show Builder");
+    } else {
+        parentWindow->setWindowTitle("unsaved - Animaniacs Show Builder");
     }
 }
 
-void ShowPrimaryPanel::removeTrack(ShowBarWidget *track)
+void ShowPrimaryPanel::objectGrabbed(Track* widget)
 {
-    layout()->removeWidget(track);
-    showBars->removeAll(track);
-    track->hide();
-    showChanged = true;
+    grabbedTrack = widget;
+    originalSlot = tracks->indexOf(widget);
+    currentSlot = originalSlot;
+    tracks->removeOne(widget);
 }
+
+void ShowPrimaryPanel::paintEvent(QPaintEvent *)
+{
+    QPainter painter(this);
+    if(currentSlot != -1) {
+        QRectF rect;
+        if(currentSlot == 0)
+            rect = QRectF(0, 0, grabbedTrack->width(), tracks->at(currentSlot)->pos().y());
+        else if(currentSlot == tracks->length())
+            rect = QRectF(0, tracks->at(currentSlot - 1)->geometry().bottomRight().y(), grabbedTrack->width(), height() - tracks->at(currentSlot - 1)->geometry().bottomRight().y());
+        else
+            rect = QRectF(0, tracks->at(currentSlot - 1)->geometry().bottomRight().y(), grabbedTrack->width(), tracks->at(currentSlot)->pos().y() - tracks->at(currentSlot - 1)->geometry().bottomRight().y());
+        painter.setBrush(Qt::magenta);
+        painter.drawRect(rect);
+    }// else {
+    //    QRectF size(0, 0, this->width(), this->height());
+    //    painter.setBrush(QColor(255, 255, 240));
+    //    painter.setPen(Qt::transparent);
+    //    painter.drawRect(size);
+    //}
+}
+
+void ShowPrimaryPanel::dragEnterEvent(QDragEnterEvent *event)
+{
+    event->accept();
+}
+
+void ShowPrimaryPanel::dragMoveEvent(QDragMoveEvent *event)
+{
+    event->accept();
+    currentSlot = calculateSlot(event->pos());
+    repaint();
+}
+
+void ShowPrimaryPanel::dropEvent(QDropEvent *event)
+{
+    event->acceptProposedAction();
+    if(currentSlot == -1)
+        currentSlot = originalSlot;
+    placeAtSlot(grabbedTrack, currentSlot);
+    grabbedTrack = nullptr;
+    currentSlot = -1;
+    originalSlot = -1;
+    repaint();
+}
+
+int ShowPrimaryPanel::calculateSlot(QPoint p)
+{
+    for(int i = 0; i <= tracks->length(); i++) {
+        if(i == 0) {
+            if(p.y() < tracks->at(i)->pos().y())
+                return i;
+        } else if(i == tracks->length()) {
+            if(p.y() > tracks->at(i-1)->geometry().bottomRight().y())
+                return i;
+        } else {
+            if(p.y() < tracks->at(i)->pos().y() && p.y() > tracks->at(i-1)->geometry().bottomRight().y())
+                return i;
+        }
+    }
+    return -1;
+}
+
+void ShowPrimaryPanel::placeAtSlot(Track *track, int index)
+{
+    for(int i = index; i < tracks->length(); i++)
+    {
+        layout()->removeWidget(tracks->at(i));
+    }
+    track->setVisible(true);
+    tracks->insert(index, track);
+    for(int i = index; i < tracks->length(); i++) {
+        layout()->addWidget(tracks->at(i));
+    }
+}
+
+void ShowPrimaryPanel::wheelEvent(QWheelEvent *event)
+{
+    if(QApplication::queryKeyboardModifiers() & Qt::ControlModifier)
+        event->accept();
+    else
+        return;
+
+    if(event->delta() > 0)
+        pixpersec *= 1.5;
+    else
+        pixpersec /= 1.5;
+    updateChildren();
+}
+
+void ShowPrimaryPanel::updateChildren()
+{
+    for(int i = 0; i < tracks->length(); i++) {
+        tracks->at(i)->setScale(pixpersec, 0);
+    }
+    int maxWidth = 0;
+    for(int i = 0; i < tracks->length(); i++) {
+        maxWidth = qMax(tracks->at(i)->getBaseWidth(), maxWidth);
+
+    }
+    for(int i = 0; i < tracks->length(); i++) {
+        tracks->at(i)->setScale(pixpersec, maxWidth);
+    }
+}
+
+
+
+
+
+

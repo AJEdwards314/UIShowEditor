@@ -4,7 +4,7 @@
 #include <QDialog>
 
 class QAbstractButton;
-class LEDShowBarWidget;
+class LEDTrack;
 
 namespace Ui {
 class LEDDialog;
@@ -19,7 +19,7 @@ public:
     ~LEDDialog();
 
 protected:
-    LEDShowBarWidget *parentShowBar;
+    LEDTrack *parentTrack; //Reference to Parent - API through apply function
 
 private slots:
     void on_buttonBox_accepted();

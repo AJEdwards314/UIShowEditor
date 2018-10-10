@@ -4,7 +4,7 @@
 #include <QDialog>
 
 class QAbstractButton;
-class WAVShowBarWidget;
+class WAVTrack;
 
 namespace Ui {
 class WAVDialog;
@@ -19,7 +19,7 @@ public:
     ~WAVDialog();
 
 protected:
-    WAVShowBarWidget *parentShowBar;
+    WAVTrack *parentTrack;
 
 private slots:
     void on_buttonBox_accepted();
