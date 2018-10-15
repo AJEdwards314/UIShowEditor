@@ -6,7 +6,9 @@
 #include <QFileDialog>
 #include <QDebug>
 
-ShowEditorWindow::ShowEditorWindow(QWidget *parent) :
+#include "controlleradapter.h"
+
+ShowEditorWindow::ShowEditorWindow(ControllerAdapter * adapter, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::ShowEditorWindow)
 {
@@ -18,6 +20,7 @@ ShowEditorWindow::ShowEditorWindow(QWidget *parent) :
     //panel->setMaximumSize(500,500);
     ui->scrollArea->setWidgetResizable(true);
     ui->scrollArea->setWidget(panel);
+    this->adapter = adapter;
 }
 
 ShowEditorWindow::~ShowEditorWindow()
@@ -36,6 +39,10 @@ void ShowEditorWindow::on_actionOpen_Track_triggered()
     if(filenames.length() == 0)
         return;
     panel->openTracks(filenames);
+
+    QFile file(filenames[0]);
+    qInfo() << "Track Send Returned: " << adapter->sendTrack(&file);
+    //qInfo() << "Pause returned: " << adapter.pauseShow();
     return;
 }
 
@@ -46,6 +53,7 @@ void ShowEditorWindow::on_actionOpen_triggered()
         return;
     panel->openShow(filepath);
     return;
+
 }
 
 void ShowEditorWindow::on_actionSave_triggered()

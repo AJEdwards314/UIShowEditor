@@ -5,6 +5,7 @@
 
 #include "track.h"
 class QFile;
+struct Point;
 
 class MotorTrack : public Track
 {
@@ -16,11 +17,6 @@ public:
     inline bool getReverse() {return reverse;}
 
 protected:
-    struct Point {
-        int val;
-        int ms;
-    };
-
     //Attributes
     QList<Point> points;
     int maxVal;

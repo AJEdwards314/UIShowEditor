@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 
-
+class ControllerAdapter;
 namespace Ui {
 class ShowEditorWindow;
 }
@@ -14,7 +14,7 @@ class ShowEditorWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit ShowEditorWindow(QWidget *parent = nullptr);
+    explicit ShowEditorWindow(ControllerAdapter * adapter, QWidget *parent = nullptr);
     ~ShowEditorWindow() override;
 
 private slots:
@@ -32,6 +32,7 @@ private:
     //Key References
     Ui::ShowEditorWindow *ui;
     ShowPrimaryPanel *panel;
+    ControllerAdapter * adapter;
 };
 
 #endif // SHOWEDITORWINDOW_H

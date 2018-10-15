@@ -8,6 +8,7 @@
 #include <QFileDialog>
 #include "leddialog.h"
 #include "showprimarypanel.h"
+#include "point.h"
 
 LEDTrack::LEDTrack(QWidget *parent, float pixpersec, QFile *sourceFile, int offset, QString port, QString colorName) : Track (parent, pixpersec, offset, sourceFile, port)
 {

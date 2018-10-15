@@ -1,12 +1,14 @@
 #include "showeditorwindow.h"
+#include "controlleradapter.h"
+#include <QDebug>
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    ShowEditorWindow w;
+    ControllerAdapter adapter;
+    ShowEditorWindow w(&adapter);
     w.show();
-    //w2.show();
 
     return a.exec();
 }

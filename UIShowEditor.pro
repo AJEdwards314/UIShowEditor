@@ -33,7 +33,9 @@ SOURCES += \
     ledtrack.cpp \
     motortrack.cpp \
     wavtrack.cpp \
-    track.cpp
+    track.cpp \
+    controlleradapter.cpp \
+    serialdaemon.cpp
 
 HEADERS += \
         showeditorwindow.h \
@@ -45,13 +47,19 @@ HEADERS += \
     ledtrack.h \
     motortrack.h \
     track.h \
-    wavtrack.h
+    wavtrack.h \
+    controlleradapter.h \
+    point.h \
+    serialdaemon.h
 
 FORMS += \
         showeditorwindow.ui \
     leddialog.ui \
     motordialog.ui \
     wavdialog.ui
+
+QT += \
+    serialport
 
 RC_ICONS = \
         team_logo.ico

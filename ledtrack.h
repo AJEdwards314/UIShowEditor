@@ -5,6 +5,7 @@
 
 #include "track.h"
 class QFile;
+struct Point;
 
 class LEDTrack : public Track
 {
@@ -15,11 +16,6 @@ public:
 
     inline QString getColorName() {return colorName;}
 protected:
-    struct Point {
-        bool val;
-        int ms;
-    };
-
     //Attributes
     QList<Point> points;
     QString colorName;

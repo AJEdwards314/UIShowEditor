@@ -10,6 +10,7 @@
 #include <QFileDialog>
 #include "motordialog.h"
 #include "showprimarypanel.h"
+#include "point.h"
 
 MotorTrack::MotorTrack(QWidget *parent, float pixpersec, QFile *sourceFile, int offset, QString port, bool reverse) : Track (parent, pixpersec, offset, sourceFile, port)
 {
