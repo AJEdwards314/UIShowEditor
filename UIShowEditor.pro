@@ -37,7 +37,9 @@ SOURCES += \
     controlleradapter.cpp \
     serialdaemon.cpp \
     serialsettingsdialog.cpp \
-    recordingconfigurationdialog.cpp
+    recordingconfigurationdialog.cpp \
+    behaviorprogramming.cpp \
+    homewindow.cpp
 
 HEADERS += \
         showeditorwindow.h \
@@ -54,7 +56,9 @@ HEADERS += \
     point.h \
     serialdaemon.h \
     serialsettingsdialog.h \
-    recordingconfigurationdialog.h
+    recordingconfigurationdialog.h \
+    behaviorprogramming.h \
+    homewindow.h
 
 
 FORMS += \
@@ -63,7 +67,9 @@ FORMS += \
     motordialog.ui \
     wavdialog.ui \
     serialsettingsdialog.ui \
-    recordingconfiguration.ui
+    recordingconfiguration.ui \
+    behaviorprogramming.ui \
+    homewindow.ui
 
 QT += \
     serialport

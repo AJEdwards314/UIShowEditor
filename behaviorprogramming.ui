@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BehaviorProgramming</class>
+ <widget class="QMainWindow" name="BehaviorProgramming">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QComboBox" name="inTypeMenu">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>70</y>
+      <width>69</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>Analog</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Digital</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Text</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QComboBox" name="inPortMenu">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>70</y>
+      <width>69</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>Ana1</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Ana2</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Ana3</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Dig1</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Dig2</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Dig3</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Text</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QComboBox" name="showNameMenu">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>70</y>
+      <width>69</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="addTrigger">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>400</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Add Trigger</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="upload">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>440</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Upload</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="inputTypeLabel">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>40</y>
+      <width>91</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Trigger Input Type</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="portLabel">
+    <property name="geometry">
+     <rect>
+      <x>360</x>
+      <y>40</y>
+      <width>61</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Trigger Port</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="showLabel">
+    <property name="geometry">
+     <rect>
+      <x>610</x>
+      <y>40</y>
+      <width>61</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Show Name</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="triggerNameLabel">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>420</y>
+      <width>101</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Enter Trigger Name:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="triggerNameEdit">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>420</y>
+      <width>113</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QFrame" name="analogFrame">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>150</y>
+      <width>311</width>
+      <height>201</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Box</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <widget class="QComboBox" name="logicCombo">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>40</y>
+       <width>51</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>&lt;</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>&gt;</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>=</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>!=</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>&lt; X &lt;</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QLabel" name="conditonalLabel">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>20</y>
+       <width>91</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Conditional Logic</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="thresholdLabel">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>20</y>
+       <width>101</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Activation Threshold</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="comparisonLabel_1">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>120</y>
+       <width>41</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;  X &lt;</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="thresholdEdit">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>40</y>
+       <width>61</width>
+       <height>20</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="thresholdEdit_2">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>120</y>
+       <width>61</width>
+       <height>20</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="thresholdEdit_3">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>120</y>
+       <width>61</width>
+       <height>20</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="textFrame">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>150</y>
+      <width>311</width>
+      <height>201</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Box</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <widget class="QLabel" name="commandLabel">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>60</y>
+       <width>101</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Input Text Commad</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="commandText">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>100</y>
+       <width>113</width>
+       <height>20</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QListWidget" name="triggerList">
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>150</y>
+      <width>281</width>
+      <height>201</height>
+     </rect>
+    </property>
+   </widget>
+   <zorder>inTypeMenu</zorder>
+   <zorder>inPortMenu</zorder>
+   <zorder>showNameMenu</zorder>
+   <zorder>addTrigger</zorder>
+   <zorder>upload</zorder>
+   <zorder>inputTypeLabel</zorder>
+   <zorder>portLabel</zorder>
+   <zorder>showLabel</zorder>
+   <zorder>triggerNameLabel</zorder>
+   <zorder>triggerNameEdit</zorder>
+   <zorder>triggerList</zorder>
+   <zorder>textFrame</zorder>
+   <zorder>analogFrame</zorder>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionNew"/>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+   </widget>
+   <addaction name="menuFile"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionNew">
+   <property name="icon">
+    <iconset>
+     <normaloff>../../Pictures/Icons/Icons/New.bmp</normaloff>../../Pictures/Icons/Icons/New.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>New</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="icon">
+    <iconset>
+     <normaloff>../../Pictures/Icons/Icons/Open.bmp</normaloff>../../Pictures/Icons/Icons/Open.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="icon">
+    <iconset>
+     <normaloff>../../Pictures/Icons/Icons/Save.bmp</normaloff>../../Pictures/Icons/Icons/Save.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>Save As</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
