@@ -8,7 +8,10 @@ class QSemaphore;
 
 class SerialDaemon : public QThread
 {
+    Q_OBJECT
 public:
+    static int current_id;
+
     enum SignalType {
         INCOMING_TRACK,
         INCOMING_SHOW,
@@ -21,8 +24,9 @@ public:
         STOP_RECORDING,
         RECORD_RXED
     };
-    SerialDaemon(QObject *parent, SignalType signalType, QString payload, QSerialPort * serialPort, QSemaphore * serialPortSem);
+    SerialDaemon(QObject *parent, SignalType signalType, QByteArray * payload, QSerialPort * serialPort, QSemaphore * serialPortSem, int myId);
     void run() override;
+
 protected:
     struct HeaderMapping {
         SignalType type;
@@ -40,15 +44,20 @@ protected:
         {STOP_RECORDING, "XR"},
         {RECORD_RXED, "RD"}
     };
+    int myId;
+
     SignalType signalType;
-    QString payload;
-    QString message;
+    QByteArray * payload;
+    QByteArray message;
     QSerialPort * serialPort;
     QSemaphore * serialPortSem;
 
     void runStopRecording();
+    QList<Point> * parseRecordingResponseString(QString response);
+
+
 signals:
-    void recordingReturned(QList<Point> points);
+    void recordingReturned(QList<Point> * points);
 };
 
 #endif // SERIALDAEMON_H

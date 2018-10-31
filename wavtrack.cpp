@@ -93,7 +93,7 @@ WAVTrack::WAVTrack(QWidget *parent, float pixpersec, QFile *sourceFile, int offs
     qInfo() << bytesPerSample;
     qInfo() << sampleRate;
     qInfo() << length;
-    updateSize();
+    init();
 }
 
 void WAVTrack::apply(int offset, QString port)

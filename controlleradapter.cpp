@@ -5,6 +5,7 @@
 #include <QSemaphore>
 #include <QDebug>
 #include "point.h"
+#include "showprimarypanel.h"
 
 ControllerAdapter::ControllerAdapter(QObject *parent) : QObject(parent)
 {
@@ -51,51 +52,73 @@ int ControllerAdapter::sendBehavior(QFile *behaviorFile)
     return sendFile(SerialDaemon::INCOMING_BEHAVIOR, behaviorFile);
 }
 
-int ControllerAdapter::startShow(QFile *showFile)
+int ControllerAdapter::startShow(QString filename)
 {
-    QString filename = getFilename(showFile);
-    return startDaemon(SerialDaemon::START_PLAYBACK, filename);
+    QByteArray * payload = new QByteArray();
+    *payload += padFilename(filename);
+    return startDaemon(SerialDaemon::START_PLAYBACK, payload);
 }
 
 int ControllerAdapter::pauseShow()
 {
-    return startDaemon(SerialDaemon::PAUSE_PLAYBACK, "");
+    QByteArray * payload = new QByteArray();
+    return startDaemon(SerialDaemon::PAUSE_PLAYBACK, payload);
 }
 
 int ControllerAdapter::stopShow()
 {
-    return startDaemon(SerialDaemon::STOP_PLAYBACK, "");
+    QByteArray * payload = new QByteArray();
+    return startDaemon(SerialDaemon::STOP_PLAYBACK, payload);
 }
 
-int ControllerAdapter::configureRecording(QFile *showFile, QString portName, QList<QString> args)
+int ControllerAdapter::configureRecording(QString filename, QStringList * args)
 {
-    QString filename = getFilename(showFile);
     QString argString = "";
-    for(int i = 0; i < args.length(); i++)
-        argString += args[i];
-    QString payload = filename + portName + argString;
+    for(int i = 0; i < args->length(); i++)
+        argString += args->at(i);
+    QByteArray * payload = new QByteArray();
+    *payload += padFilename(filename);
+    *payload += argString;
+    qInfo() << "In Configure Recording";
     return startDaemon(SerialDaemon::CONFIGURE_RECORDING, payload);
 }
 
 int ControllerAdapter::startRecording()
 {
-    return startDaemon(SerialDaemon::START_RECORDING, "");
+    QByteArray * payload = new QByteArray();
+    return startDaemon(SerialDaemon::START_RECORDING, payload);
 }
 
-int ControllerAdapter::stopRecording(QList<Point> ** outPoints)
+int ControllerAdapter::stopRecording(ShowPrimaryPanel * showPanel)
 {
     QList<Point> recordPoints;
-    int returnVal = startDaemon(SerialDaemon::STOP_RECORDING, "Stopping Recording");
+    QByteArray * payload = new QByteArray();
+    *payload += "Stopping Recording";
+    SerialDaemon * daemon;
+    int returnVal = createDaemon(&daemon, SerialDaemon::STOP_RECORDING, payload);
+    if(returnVal != 0)
+        return 1;
+    connect(daemon, &SerialDaemon::recordingReturned, showPanel, &ShowPrimaryPanel::recordingComplete);
+    daemon->start();
     return returnVal;
-    //TODO Read in returned point vals to recordPoints
 }
 
-int ControllerAdapter::startDaemon(SerialDaemon::SignalType signalType, QString payload)
+int ControllerAdapter::createDaemon(SerialDaemon ** daemon, SerialDaemon::SignalType signalType, QByteArray * payload)
 {
     if(!(serialPort->isOpen() && serialPort->isWritable() && serialPort->isReadable()))
         return 1;
-    SerialDaemon *daemon = new SerialDaemon(this, signalType, payload, serialPort, serialPortSem);
+    *daemon = new SerialDaemon(this, signalType, payload, serialPort, serialPortSem, getnextId());
+    return 0;
+}
+
+int ControllerAdapter::startDaemon(SerialDaemon::SignalType signalType, QByteArray * payload)
+{
+    qInfo() << "In start daemon";
+    SerialDaemon *daemon;
+    if(createDaemon(&daemon, signalType, payload) != 0)
+        return 1;
     daemon->start();
+    qInfo() << "End start daemon";
     return 0;
 }
 
@@ -103,38 +126,50 @@ QString ControllerAdapter::getFilename(QFile *file)
 {
     if(file == nullptr)
         return "";
-    return QFileInfo(*file).fileName().leftJustified(40, ' ');
+    return padFilename(QFileInfo(*file).fileName());
 }
 
-QString ControllerAdapter::readFile(QFile *file)
+QString ControllerAdapter::padFilename(QString filename)
 {
-    QString outString;
+    return filename.leftJustified(40, ' ');
+}
+
+QByteArray * ControllerAdapter::readFile(QFile *file)
+{
+    QByteArray * outArr = new QByteArray;
     if(file == nullptr)
-        return "";
-    file->open(QIODevice::ReadOnly | QFile::Text);
+        return outArr;
+    file->open(QIODevice::ReadOnly);
     if(!(file->isOpen() && file->isReadable()))
-        return "";
+        return outArr;
 
-    QTextStream stream(file);
-    outString = stream.readAll();
+    *outArr = file->readAll();
     file->close();
-    return outString;
+    return outArr;
 }
 
-QString ControllerAdapter::getLengthString(QString filedata)
+QString ControllerAdapter::getLengthString(int length)
 {
-    return QString("%1").arg(filedata.length(), 6, 10, QChar('0'));
+    return QString("%1").arg(length, 6, 10, QChar('0'));
 }
 
 int ControllerAdapter::sendFile(SerialDaemon::SignalType signalType, QFile *file)
 {
     QString filename = getFilename(file);
-    QString filedata = readFile(file);
-    if(filename == "" || filedata == "")
+    QByteArray * filedata = readFile(file);
+    if(filename == "" || filedata->length() == 0)
         return 1;
-    QString filelength = getLengthString(filedata);
+    QString filelength = getLengthString(filedata->length());
 
-    QString payload = filename + filelength + filedata;
+    QByteArray *payload = new QByteArray;
+    *payload += filename.toUtf8();
+    *payload += filelength.toUtf8();
+    *payload += *filedata;
     return startDaemon(signalType, payload);
+}
+
+int ControllerAdapter::getnextId() {
+    id++;
+    return id;
 }
 

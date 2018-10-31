@@ -35,7 +35,9 @@ SOURCES += \
     wavtrack.cpp \
     track.cpp \
     controlleradapter.cpp \
-    serialdaemon.cpp
+    serialdaemon.cpp \
+    serialsettingsdialog.cpp \
+    recordingconfigurationdialog.cpp
 
 HEADERS += \
         showeditorwindow.h \
@@ -50,13 +52,18 @@ HEADERS += \
     wavtrack.h \
     controlleradapter.h \
     point.h \
-    serialdaemon.h
+    serialdaemon.h \
+    serialsettingsdialog.h \
+    recordingconfigurationdialog.h
+
 
 FORMS += \
         showeditorwindow.ui \
     leddialog.ui \
     motordialog.ui \
-    wavdialog.ui
+    wavdialog.ui \
+    serialsettingsdialog.ui \
+    recordingconfiguration.ui
 
 QT += \
     serialport
@@ -68,3 +75,8 @@ RC_ICONS = \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES +=
+
+RESOURCES += \
+    resources.qrc

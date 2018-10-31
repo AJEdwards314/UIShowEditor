@@ -88,8 +88,22 @@ MotorTrack::MotorTrack(QWidget *parent, float pixpersec, QFile *sourceFile, int 
     //for(int i = 0; i < points.length(); i++)
     //    qInfo() << points[i].val << "@" << points[i].ms/1000 << "." << points[i].ms%1000;
     //qInfo() << length;
-    updateSize();
+    init();
 }
+
+MotorTrack::MotorTrack(QWidget *parent, float pixpersec, QStringList * args, QList<Point> * points) : Track(parent, pixpersec)
+{
+    port = args->at(1);
+    maxVal = args->at(2).toInt();
+    minVal = args->at(3).toInt();
+    midVal = args->at(4).toInt();
+    reverse = args->at(5) == "1";
+    title = "";
+    this->points = QList<Point>(*points); //Copy points over
+    length = points->last().ms;
+    init();
+}
+
 
 void MotorTrack::apply(QString name, int offset, QString port, int maxVal, int minVal, int defVal, bool reverse)
 {

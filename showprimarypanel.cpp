@@ -10,16 +10,23 @@
 #include <QFileInfo>
 #include <QDragMoveEvent>
 #include <QMessageBox>
+#include <QFileDialog>
+#include <QRandomGenerator>
+
 #include "track.h"
 #include "motortrack.h"
 #include "ledtrack.h"
 #include "showbaseclass.h"
 #include "showeditorwindow.h"
 #include "wavtrack.h"
+#include "controlleradapter.h"
+#include "point.h"
 
 
-ShowPrimaryPanel::ShowPrimaryPanel(QWidget *parent) : QWidget(parent)
+ShowPrimaryPanel::ShowPrimaryPanel(QWidget *parent, ControllerAdapter * adapter) : QWidget(parent)
 {
+    this->adapter = adapter;
+
     //this->setMouseTracking(true);
     this->setAcceptDrops(true);
     //this->setMinimumWidth(1500);
@@ -36,6 +43,7 @@ void ShowPrimaryPanel::openShow(QString filename)
     newShow();
     QFile file(filename);
     this->showBase = new ShowBaseClass(this, filename);
+    generateShowSavedRv();
     updateTitle();
 }
 
@@ -80,7 +88,7 @@ void ShowPrimaryPanel::openTracks(QStringList &filenames, QList<int> * offsets, 
     {
         QFileInfo fileinfo(filenames[i]);
         QFile *file = new QFile(filenames[i]);
-        Track *bar = nullptr;
+        Track *track = nullptr;
         //TODO add file extension error checking
         int offset = 0;
         QString port = "";
@@ -94,28 +102,39 @@ void ShowPrimaryPanel::openTracks(QStringList &filenames, QList<int> * offsets, 
             currentArgs = args->at(i);
         if(fileinfo.suffix() == "lsr") {
             if(currentArgs.length() == 0)
-                bar = new LEDTrack(this, pixpersec, file, offset, port, "Green");
+                track = new LEDTrack(this, pixpersec, file, offset, port, "Green");
             else {
                 QString colorName = currentArgs[0];
-                bar = new LEDTrack(this, pixpersec, file, offset, port, colorName );
+                track = new LEDTrack(this, pixpersec, file, offset, port, colorName );
             }
         } else if(fileinfo.suffix() == "osr") {
             if(currentArgs.length() == 0)
-                bar = new MotorTrack(this, pixpersec, file, offset, port);
+                track = new MotorTrack(this, pixpersec, file, offset, port);
             else {
                 bool reverse = currentArgs[0] != "0";
-                bar = new MotorTrack(this, pixpersec, file, offset, port, reverse);
+                track = new MotorTrack(this, pixpersec, file, offset, port, reverse);
             }
         } else {
-            bar = new WAVTrack(this, pixpersec, file, offset, port); //TODO .WAV
+            track = new WAVTrack(this, pixpersec, file, offset, port); //TODO .WAV
         }
-        layout()->addWidget(bar);
-        tracks->append(bar);
+        layout()->addWidget(track);
+        tracks->append(track);
         updateChildren();
         trackShowDataUpdated();
     }
     update();
 
+}
+
+void ShowPrimaryPanel::newTrack(QStringList * recordingArgs, QList<Point> * points)
+{
+    Track * track;
+    if(recordingArgs->at(0) == "MOT") //Motor Track
+        track = new MotorTrack(this, pixpersec, recordingArgs, points);
+    layout()->addWidget(track);
+    tracks->append(track);
+    updateChildren();
+    trackShowDataUpdated();
 }
 
 void ShowPrimaryPanel::trackShowDataUpdated()
@@ -136,15 +155,32 @@ void ShowPrimaryPanel::removeTrack(Track *track)
 
 void ShowPrimaryPanel::save()
 {
+    if(!hasShow()) {
+        createEmptyShow();
+        saveAs();
+        return;
+    }
+
     showBase->save();
     showChanged = false;
+    generateShowSavedRv();
     updateTitle();
 }
 
-void ShowPrimaryPanel::saveAs(QFile * newSourceFile)
+void ShowPrimaryPanel::saveAs()
 {
+    if(!hasShow()) {
+        createEmptyShow();
+    }
+
+    QString filepath = QFileDialog::getSaveFileName(this, tr("Save Show"),"",tr("Animaniacs Show Files (*.shw)"));
+    if(filepath == "")
+        return;
+    QFile * newSourceFile = new QFile(filepath);
+
     showBase->saveAs(newSourceFile);
     showChanged = false;
+    generateShowSavedRv();
     updateTitle();
 }
 
@@ -167,6 +203,60 @@ void ShowPrimaryPanel::objectGrabbed(Track* widget)
     currentSlot = originalSlot;
     tracks->removeOne(widget);
 }
+
+
+void ShowPrimaryPanel::transferShow()
+{
+    if(!hasShow()) {
+        save();
+    }
+
+    if(showSavedRv == showTransferedRv)
+        return;
+
+    for(int i = 0; i < tracks->length(); i++)
+        adapter->sendTrack(tracks->at(i)->getFile());
+    adapter->sendShow(showBase->getFile());
+
+    showTransferedRv = showSavedRv;
+}
+
+void ShowPrimaryPanel::startShow()
+{
+    if(!hasShow())
+        save();
+    adapter->startShow(showBase->getFilename());
+}
+
+void ShowPrimaryPanel::pauseShow()
+{
+    adapter->pauseShow();
+}
+
+void ShowPrimaryPanel::stopShow()
+{
+    adapter->stopShow();
+}
+
+void ShowPrimaryPanel::configureRecording(QStringList* args)
+{
+    if(!hasShow())
+        save();
+    recordingArgs = new QStringList(*args);
+    adapter->configureRecording(showBase->getFilename(), args);
+}
+
+void ShowPrimaryPanel::startRecording()
+{
+    adapter->startRecording();
+}
+
+void ShowPrimaryPanel::stopRecording()
+{
+    QList<Point> * pointList;
+    adapter->stopRecording(this);
+}
+
 
 void ShowPrimaryPanel::paintEvent(QPaintEvent *)
 {
@@ -270,6 +360,18 @@ void ShowPrimaryPanel::updateChildren()
     for(int i = 0; i < tracks->length(); i++) {
         tracks->at(i)->setScale(pixpersec, maxWidth);
     }
+}
+
+void ShowPrimaryPanel::generateShowSavedRv()
+{
+    showSavedRv = QRandomGenerator::global()->generate();
+}
+
+void ShowPrimaryPanel::recordingComplete(QList<Point> * points)
+{
+    for(int i = 0; i < points->length(); i++)
+        qInfo() << points->at(i).val << ", " << points->at(i).ms;
+    newTrack(recordingArgs, points);
 }
 
 

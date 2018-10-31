@@ -26,6 +26,7 @@ public:
     int getBaseWidth();
     inline bool getTrackChanged() {return trackChanged;}
     inline QString getFilename() {return filename;}
+    inline QFile * getFile() {return sourceFile;}
     inline int getOffset() {return offset;}
     inline QString getPort() {return port;}
 protected:
@@ -65,6 +66,7 @@ protected:
     virtual void saveTrackAs() = 0;
 
     //Miscilaneous Functions
+    virtual void init();
     void updateSize();
     void setOffset(int offset);
     void setTrackChanged(bool trackChanged);

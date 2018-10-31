@@ -9,6 +9,7 @@
 
 class QFile;
 class QSerialPort;
+class ShowPrimaryPanel;
 struct Point;
 
 class ControllerAdapter : public QObject
@@ -22,26 +23,30 @@ public:
     int sendTrack(QFile *trackFile);
     int sendShow(QFile *showFile);
     int sendBehavior(QFile *behaviorFile);
-    int startShow(QFile *showFile);
+    int startShow(QString filename);
     int pauseShow();
     int stopShow();
-    int configureRecording(QFile *showFile, QString portName, QList<QString> args);
+    int configureRecording(QString filename, QStringList* args);
     int startRecording();
-    int stopRecording(QList<Point> ** outPoints);
+    int stopRecording(ShowPrimaryPanel * showPanel);
 
 protected:
     QSemaphore * serialPortSem;
     QSerialPort * serialPort;
     QSerialPortInfo serialPortInfo;
 
-    int startDaemon(SerialDaemon::SignalType signalType, QString payload);
+    int createDaemon(SerialDaemon ** daemon, SerialDaemon::SignalType signalType, QByteArray * payload);
+    int startDaemon(SerialDaemon::SignalType signalType, QByteArray * payload);
     QString getFilename(QFile *file);
-    QString readFile(QFile *file);
-    QString getLengthString(QString filebody);
+    QString padFilename(QString filename);
+    QByteArray * readFile(QFile *file);
+    QString getLengthString(int length);
+
 
     int sendFile(SerialDaemon::SignalType signalType, QFile *file);
+    int getnextId();
 
-
+    int id = -1;
 signals:
 
 public slots:

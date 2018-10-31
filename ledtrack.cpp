@@ -79,7 +79,7 @@ LEDTrack::LEDTrack(QWidget *parent, float pixpersec, QFile *sourceFile, int offs
     for(int i = 0; i < points.length(); i++)
         qInfo() << points[i].val << "@" << points[i].ms/1000 << "." << points[i].ms%1000;
     qInfo() << length;
-    updateSize();
+    init();
 }
 
 void LEDTrack::apply(QString name, int offset, QString port, QString colorName)

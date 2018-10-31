@@ -17,6 +17,7 @@ public:
 
     //Accessors
     inline QString getFilename() {return filename;}
+    inline QFile * getFile() {return sourceFile;}
 protected:
     //Key References
     ShowPrimaryPanel * parentPanel;

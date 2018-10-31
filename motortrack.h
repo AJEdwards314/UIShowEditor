@@ -11,6 +11,7 @@ class MotorTrack : public Track
 {
 public:
     explicit MotorTrack(QWidget *parent = nullptr, float pixpersec = 100, QFile * sourceFile = nullptr, int offset = 0, QString port = "SRV1", bool reverse = false);
+    explicit MotorTrack(QWidget *parent = nullptr, float pixpersec = 100, QStringList * args = nullptr, QList<Point> * points = nullptr);
 
     void apply(QString name, int offset, QString port, int maxVal, int minVal, int defVal, bool reverse); //Called by properties type window
 
@@ -31,6 +32,9 @@ protected:
     void propertiesOpen() override;
     void saveTrack() override;
     void saveTrackAs() override;
+
+    //Other Functions
+    //void init() override; //Do not need to override
 };
 
 #endif // MOTORTRACK_H

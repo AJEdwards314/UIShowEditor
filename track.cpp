@@ -146,6 +146,11 @@ void Track::infoRightClicked(QMouseEvent *event)
     menu->popup(event->globalPos());
 }
 
+void Track::init() //Called at the end of the track constructors
+{
+    updateSize();
+}
+
 void Track::updateSize()
 {
     augmentedLength = ((pixpersec * length) / 1000.0);
@@ -173,7 +178,10 @@ void Track::setTrackChanged(bool trackChanged)
 void Track::setSourceFile(QFile * sourceFile)
 {
     this->sourceFile = sourceFile;
-    this->filename = QFileInfo(*sourceFile).fileName();
+    if(sourceFile != nullptr)
+        this->filename = QFileInfo(*sourceFile).fileName();
+    else
+        this->filename = "";
 }
 
 void Track::removeTrack()
