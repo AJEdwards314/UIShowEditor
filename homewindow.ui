@@ -114,7 +114,7 @@ Programming</string>
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>../../Pictures/Animaniacs.png</pixmap>
+     <pixmap>../Pictures/Animaniacs.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -123,14 +123,14 @@ Programming</string>
    <widget class="QLabel" name="ProductName">
     <property name="geometry">
      <rect>
-      <x>130</x>
+      <x>160</x>
       <y>50</y>
-      <width>131</width>
-      <height>16</height>
+      <width>61</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="text">
-     <string>Insert Product Name Here</string>
+     <string>Animani Axe</string>
     </property>
    </widget>
   </widget>

@@ -19,7 +19,7 @@ HomeWindow::~HomeWindow()
 
 void HomeWindow::on_behaviorButton_clicked()
 {;
-    BehaviorProgramming *newWindow = new BehaviorProgramming();
+    BehaviorProgramming *newWindow = new BehaviorProgramming(adapter);
     newWindow->show();
 }
 
