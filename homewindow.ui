@@ -113,6 +113,9 @@ Programming</string>
     <property name="text">
      <string/>
     </property>
+    <property name="pixmap">
+     <pixmap>:/images/team_logo.ico</pixmap>
+    </property>
     <property name="scaledContents">
      <bool>true</bool>
     </property>
