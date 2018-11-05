@@ -9,6 +9,8 @@ HomeWindow::HomeWindow(ControllerAdapter *adapter, QWidget *parent) :
     ui(new Ui::HomeWindow)
 {
     ui->setupUi(this);
+//    const QIcon logo = QIcon(":/images/Animaniacs.png");
+//    ui->label->pixmap();
     this->adapter = adapter;
 }
 

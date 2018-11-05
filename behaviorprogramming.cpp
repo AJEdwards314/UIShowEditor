@@ -20,7 +20,7 @@ BehaviorProgramming::BehaviorProgramming(ControllerAdapter * adapter, QWidget *p
     ui->actionDisconnect->setEnabled(false);
     ui->actionSettings->setEnabled(true);
     createSerialToolbar();
-    QDir directory("C:/Users/Morga/Documents/AnimaniacsGUI/Shows");
+    QDir directory(":/Shows");
     directory.setFilter(QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks);
     QFileInfoList list = directory.entryInfoList();
     for (int i = 0; i < list.size(); ++i) {
@@ -186,7 +186,6 @@ void BehaviorProgramming::on_actionConnect_triggered()
     int result = adapter->startSerialConnection(settings.name, QSerialPort::BaudRate(settings.baudRate));
     if(result != 0)
         return; //TODO issue error dialog
-   // playAct->setEnabled(true);
     serialOpen = true;
     ui->actionConnect->setEnabled(false);
     ui->actionDisconnect->setEnabled(true);
