@@ -40,6 +40,8 @@ private slots:
 
     void on_upload_clicked();
 
+    void on_actionUpload_triggered();
+
 private:
     Ui::BehaviorProgramming *ui;
     QString currentFile = "";

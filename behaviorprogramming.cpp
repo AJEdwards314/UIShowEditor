@@ -238,7 +238,11 @@ void BehaviorProgramming::createSerialToolbar()
     serialToolBar->addAction(ui->actionSettings);
 }
 
-void BehaviorProgramming::on_upload_clicked()
-{
 
+void BehaviorProgramming::on_actionUpload_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, "Open the file");
+    QFile file(fileName);
+    QFile *f = &file;
+    adapter->sendBehavior(f);
 }

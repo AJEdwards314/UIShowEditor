@@ -97,27 +97,14 @@
    <widget class="QPushButton" name="addTrigger">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>400</y>
+      <x>580</x>
+      <y>420</y>
       <width>75</width>
       <height>23</height>
      </rect>
     </property>
     <property name="text">
      <string>Add Trigger</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="upload">
-    <property name="geometry">
-     <rect>
-      <x>570</x>
-      <y>440</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Upload</string>
     </property>
    </widget>
    <widget class="QLabel" name="inputTypeLabel">
@@ -364,7 +351,6 @@
    <zorder>inPortMenu</zorder>
    <zorder>showNameMenu</zorder>
    <zorder>addTrigger</zorder>
-   <zorder>upload</zorder>
    <zorder>inputTypeLabel</zorder>
    <zorder>portLabel</zorder>
    <zorder>showLabel</zorder>
@@ -390,6 +376,7 @@
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
+    <addaction name="actionUpload"/>
    </widget>
    <widget class="QMenu" name="menuSerial">
     <property name="title">
@@ -455,6 +442,11 @@
    </property>
    <property name="text">
     <string>Settings</string>
+   </property>
+  </action>
+  <action name="actionUpload">
+   <property name="text">
+    <string>Upload</string>
    </property>
   </action>
  </widget>

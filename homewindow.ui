@@ -114,7 +114,7 @@ Programming</string>
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>:/images/team_logo.ico</pixmap>
+     <pixmap resource="resources.qrc">:/images/Animaniacs.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -155,6 +155,8 @@ Programming</string>
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
