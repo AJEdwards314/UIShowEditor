@@ -35,12 +35,12 @@ protected:
     QSerialPort * serialPort;
     QSerialPortInfo serialPortInfo;
 
-    int createDaemon(SerialDaemon ** daemon, SerialDaemon::SignalType signalType, QByteArray * payload);
-    int startDaemon(SerialDaemon::SignalType signalType, QByteArray * payload);
+    int createDaemon(SerialDaemon ** daemon, SerialDaemon::SignalType signalType, QByteArray * payload, QByteArray * dataPayload = nullptr);
+    int startDaemon(SerialDaemon::SignalType signalType, QByteArray * payload, QByteArray * dataPayload = nullptr);
     QString getFilename(QFile *file);
     QString padFilename(QString filename);
     QByteArray * readFile(QFile *file);
-    QString getLengthString(int length);
+    QString getLengthString(int length, int padLength = 10);
 
 
     int sendFile(SerialDaemon::SignalType signalType, QFile *file);

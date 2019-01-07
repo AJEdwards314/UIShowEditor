@@ -1,3 +1,5 @@
+#define SERIALDAEMON_PACKET_LENGTH 4096
+
 #ifndef SERIALDAEMON_H
 #define SERIALDAEMON_H
 #include <QThread>
@@ -22,9 +24,10 @@ public:
         CONFIGURE_RECORDING,
         START_RECORDING,
         STOP_RECORDING,
-        RECORD_RXED
+        RECORD_RXED,
+        PACKET
     };
-    SerialDaemon(QObject *parent, SignalType signalType, QByteArray * payload, QSerialPort * serialPort, QSemaphore * serialPortSem, int myId);
+    SerialDaemon(QObject *parent, SignalType signalType, QByteArray * payload, QSerialPort * serialPort, QSemaphore * serialPortSem, int myId, QByteArray * dataPayload = nullptr);
     void run() override;
 
 protected:
@@ -32,7 +35,7 @@ protected:
         SignalType type;
         char header[3];
     };
-    const HeaderMapping mapping[10] = {
+    const HeaderMapping mapping[11] = {
         {INCOMING_TRACK, "AD"},
         {INCOMING_SHOW, "SD"},
         {INCOMING_BEHAVIOR, "BD"},
@@ -42,12 +45,14 @@ protected:
         {CONFIGURE_RECORDING, "CR"},
         {START_RECORDING, "SR"},
         {STOP_RECORDING, "XR"},
-        {RECORD_RXED, "RD"}
+        {RECORD_RXED, "RD"},
+        {PACKET, "PK"}
     };
     int myId;
 
     SignalType signalType;
     QByteArray * payload;
+    QByteArray * dataPayload;
     QByteArray message;
     QSerialPort * serialPort;
     QSemaphore * serialPortSem;
