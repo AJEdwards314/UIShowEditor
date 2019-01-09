@@ -21,7 +21,7 @@ int ControllerAdapter::startSerialConnection(QString port, QSerialPort::BaudRate
     serialPort->setDataBits(QSerialPort::Data8);
     serialPort->setParity(QSerialPort::NoParity);
     serialPort->setStopBits(QSerialPort::OneStop);
-    serialPort->setFlowControl(QSerialPort::HardwareControl);
+    serialPort->setFlowControl(QSerialPort::NoFlowControl);
 
     qInfo() << "Is Open: " << serialPort->isOpen();
     qInfo() << "Is Writable: " << serialPort->isWritable();
@@ -76,8 +76,10 @@ int ControllerAdapter::configureRecording(QString filename, QStringList * args)
     QString argString = "";
     for(int i = 0; i < args->length(); i++)
         argString += args->at(i);
+        argString += ",";
     QByteArray * payload = new QByteArray();
     *payload += padFilename(filename);
+    *payload += getLengthString(argString.length(), 4);
     *payload += argString;
     qInfo() << "In Configure Recording";
     return startDaemon(SerialDaemon::CONFIGURE_RECORDING, payload);
@@ -93,7 +95,7 @@ int ControllerAdapter::stopRecording(ShowPrimaryPanel * showPanel)
 {
     QList<Point> recordPoints;
     QByteArray * payload = new QByteArray();
-    *payload += "Stopping Recording";
+    //*payload += "Stopping Recording";
     SerialDaemon * daemon;
     int returnVal = createDaemon(&daemon, SerialDaemon::STOP_RECORDING, payload);
     if(returnVal != 0)
@@ -103,19 +105,19 @@ int ControllerAdapter::stopRecording(ShowPrimaryPanel * showPanel)
     return returnVal;
 }
 
-int ControllerAdapter::createDaemon(SerialDaemon ** daemon, SerialDaemon::SignalType signalType, QByteArray * payload)
+int ControllerAdapter::createDaemon(SerialDaemon ** daemon, SerialDaemon::SignalType signalType, QByteArray * payload, QByteArray * dataPayload)
 {
     if(!(serialPort->isOpen() && serialPort->isWritable() && serialPort->isReadable()))
         return 1;
-    *daemon = new SerialDaemon(this, signalType, payload, serialPort, serialPortSem, getnextId());
+    *daemon = new SerialDaemon(this, signalType, payload, serialPort, serialPortSem, getnextId(), dataPayload);
     return 0;
 }
 
-int ControllerAdapter::startDaemon(SerialDaemon::SignalType signalType, QByteArray * payload)
+int ControllerAdapter::startDaemon(SerialDaemon::SignalType signalType, QByteArray * payload, QByteArray * dataPayload)
 {
     qInfo() << "In start daemon";
     SerialDaemon *daemon;
-    if(createDaemon(&daemon, signalType, payload) != 0)
+    if(createDaemon(&daemon, signalType, payload, dataPayload) != 0)
         return 1;
     daemon->start();
     qInfo() << "End start daemon";
@@ -148,9 +150,9 @@ QByteArray * ControllerAdapter::readFile(QFile *file)
     return outArr;
 }
 
-QString ControllerAdapter::getLengthString(int length)
+QString ControllerAdapter::getLengthString(int length, int padLength)
 {
-    return QString("%1").arg(length, 6, 10, QChar('0'));
+    return QString("%1").arg(length, padLength, 10, QChar('0'));
 }
 
 int ControllerAdapter::sendFile(SerialDaemon::SignalType signalType, QFile *file)
@@ -164,8 +166,8 @@ int ControllerAdapter::sendFile(SerialDaemon::SignalType signalType, QFile *file
     QByteArray *payload = new QByteArray;
     *payload += filename.toUtf8();
     *payload += filelength.toUtf8();
-    *payload += *filedata;
-    return startDaemon(signalType, payload);
+    //*payload += *filedata;
+    return startDaemon(signalType, payload, filedata);
 }
 
 int ControllerAdapter::getnextId() {
