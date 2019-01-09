@@ -9,6 +9,8 @@ HomeWindow::HomeWindow(ControllerAdapter *adapter, QWidget *parent) :
     ui(new Ui::HomeWindow)
 {
     ui->setupUi(this);
+//    const QIcon logo = QIcon(":/images/Animaniacs.png");
+//    ui->label->pixmap();
     this->adapter = adapter;
 }
 
@@ -19,7 +21,7 @@ HomeWindow::~HomeWindow()
 
 void HomeWindow::on_behaviorButton_clicked()
 {;
-    BehaviorProgramming *newWindow = new BehaviorProgramming();
+    BehaviorProgramming *newWindow = new BehaviorProgramming(adapter);
     newWindow->show();
 }
 

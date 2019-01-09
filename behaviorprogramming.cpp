@@ -1,9 +1,10 @@
 #include "behaviorprogramming.h"
 #include "ui_behaviorprogramming.h"
 #include <QDir>
-
-
-BehaviorProgramming::BehaviorProgramming(QWidget *parent) :
+#include <QToolBar>
+#include "controlleradapter.h"
+#include "serialsettingsdialog.h"
+BehaviorProgramming::BehaviorProgramming(ControllerAdapter * adapter, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::BehaviorProgramming)
 {
@@ -11,15 +12,22 @@ BehaviorProgramming::BehaviorProgramming(QWidget *parent) :
     ui->textFrame->setHidden(true);
     ui->thresholdEdit_2->setDisabled(true);
     ui->thresholdEdit_3->setDisabled(true);
+    this->adapter = adapter;
+    settingsDialog = new SerialSettingsDialog(this);
     setWindowTitle("Unsaved");
 
-    QDir directory("C:/Users/Morga/Documents/AnimaniacsGUI/Shows");
+    ui->actionConnect->setEnabled(false);
+    ui->actionDisconnect->setEnabled(false);
+    ui->actionSettings->setEnabled(true);
+    createSerialToolbar();
+    QDir directory(":/Shows");
     directory.setFilter(QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks);
     QFileInfoList list = directory.entryInfoList();
     for (int i = 0; i < list.size(); ++i) {
             QFileInfo fileInfo = list.at(i);
             ui->showNameMenu->addItem(fileInfo.fileName());
         }
+
 }
 BehaviorProgramming::~BehaviorProgramming()
 {
@@ -170,4 +178,71 @@ void BehaviorProgramming::on_addTrigger_clicked()
         }
     }
     ui->triggerList->addItem(trigger);
+}
+
+void BehaviorProgramming::on_actionConnect_triggered()
+{
+    SerialSettingsDialog::Settings settings = settingsDialog->settings();
+    int result = adapter->startSerialConnection(settings.name, QSerialPort::BaudRate(settings.baudRate));
+    if(result != 0)
+        return; //TODO issue error dialog
+    serialOpen = true;
+    ui->actionConnect->setEnabled(false);
+    ui->actionDisconnect->setEnabled(true);
+}
+
+
+void BehaviorProgramming::on_actionDisconnect_triggered()
+{
+    adapter->stopSerialConnection();
+    serialDisconnected();
+}
+
+void BehaviorProgramming::on_actionSettings_triggered()
+{
+    settingsDialog->show();
+    settingsDialog->exec();
+    int result = settingsDialog->result();
+    if(result != QDialog::Accepted)
+        return;
+    ui->actionConnect->setEnabled(true);
+}
+
+
+
+void BehaviorProgramming::serialDisconnected() {
+    serialOpen = false;
+    ui->actionConnect->setEnabled(true);
+    ui->actionDisconnect->setEnabled(false);
+}
+void BehaviorProgramming::createSerialToolbar()
+{
+    QToolBar *serialToolBar = addToolBar(tr("Serial"));
+
+    const QIcon connectIcon = QIcon(":/images/Connect.png");
+    ui->actionConnect = new QAction(connectIcon, tr("Connect"), this);
+    ui->actionConnect->setStatusTip(tr("Open Serial Port for Data Transfer"));
+    connect(ui->actionConnect, &QAction::triggered, this, &BehaviorProgramming::on_actionConnect_triggered);
+    serialToolBar->addAction(ui->actionConnect);
+
+    const QIcon disconnectIcon = QIcon(":/images/Disconnect.png");
+    ui->actionDisconnect = new QAction(disconnectIcon, tr("Disconnect"), this);
+    ui->actionDisconnect->setStatusTip(tr("Close Serial Port"));
+    connect(ui->actionDisconnect, &QAction::triggered, this, &BehaviorProgramming::on_actionDisconnect_triggered);
+    serialToolBar->addAction(ui->actionDisconnect);
+
+    const QIcon settingsIcon = QIcon(":/images/Settings.png");
+    ui->actionSettings= new QAction(settingsIcon, tr("Settings"), this);
+    ui->actionSettings->setStatusTip(tr("Configure Serial Connection"));
+    connect(ui->actionSettings, &QAction::triggered, this, &BehaviorProgramming::on_actionSettings_triggered);
+    serialToolBar->addAction(ui->actionSettings);
+}
+
+
+void BehaviorProgramming::on_actionUpload_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, "Open the file");
+    QFile file(fileName);
+    QFile *f = &file;
+    adapter->sendBehavior(f);
 }

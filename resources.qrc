@@ -8,5 +8,11 @@
         <file>images/Connect.png</file>
         <file>images/Disconnect.png</file>
         <file>images/Settings.png</file>
+        <file>Shows/Alex.shw.txt</file>
+        <file>Shows/Congratulations.shw.txt</file>
+        <file>Shows/Goodbye.shw.txt</file>
+        <file>Shows/Greet.shw.txt</file>
+        <file>Shows/Sleep.shw.txt</file>
+        <file>images/Animaniacs.png</file>
     </qresource>
 </RCC>
