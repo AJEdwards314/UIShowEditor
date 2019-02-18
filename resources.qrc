@@ -8,11 +8,45 @@
         <file>images/Connect.png</file>
         <file>images/Disconnect.png</file>
         <file>images/Settings.png</file>
-        <file>Shows/Alex.shw.txt</file>
-        <file>Shows/Congratulations.shw.txt</file>
-        <file>Shows/Goodbye.shw.txt</file>
-        <file>Shows/Greet.shw.txt</file>
-        <file>Shows/Sleep.shw.txt</file>
         <file>images/Animaniacs.png</file>
+        <file>Shows/alex.shw</file>
+        <file>Shows/congratulations.shw</file>
+        <file>Shows/Goodbye.shw</file>
+        <file>Shows/Greet.shw</file>
+        <file>Shows/Sleep.shw</file>
+        <file>behaviorprogramming.cpp</file>
+        <file>behaviorprogramming.h</file>
+        <file>controlleradapter.cpp</file>
+        <file>controlleradapter.h</file>
+        <file>homewindow.cpp</file>
+        <file>homewindow.h</file>
+        <file>leddialog.cpp</file>
+        <file>leddialog.h</file>
+        <file>ledtrack.cpp</file>
+        <file>ledtrack.h</file>
+        <file>main.cpp</file>
+        <file>motordialog.cpp</file>
+        <file>motordialog.h</file>
+        <file>motortrack.cpp</file>
+        <file>motortrack.h</file>
+        <file>point.h</file>
+        <file>recordingconfigurationdialog.cpp</file>
+        <file>recordingconfigurationdialog.h</file>
+        <file>serialdaemon.cpp</file>
+        <file>serialdaemon.h</file>
+        <file>serialsettingsdialog.cpp</file>
+        <file>serialsettingsdialog.h</file>
+        <file>showbaseclass.cpp</file>
+        <file>showbaseclass.h</file>
+        <file>showeditorwindow.cpp</file>
+        <file>showeditorwindow.h</file>
+        <file>showprimarypanel.cpp</file>
+        <file>showprimarypanel.h</file>
+        <file>track.cpp</file>
+        <file>track.h</file>
+        <file>wavdialog.cpp</file>
+        <file>wavdialog.h</file>
+        <file>wavtrack.cpp</file>
+        <file>wavtrack.h</file>
     </qresource>
 </RCC>

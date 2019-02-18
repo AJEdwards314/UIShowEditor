@@ -50,32 +50,82 @@
     </property>
     <item>
      <property name="text">
-      <string>Ana1</string>
+      <string>AIN1</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>Ana2</string>
+      <string>AIN2</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>Ana3</string>
+      <string>AIN3</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>Dig1</string>
+      <string>AIN4</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>Dig2</string>
+      <string>AIN5</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>Dig3</string>
+      <string>AIN6</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>AIN7</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>AIN8</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>DIN1</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>DIN2</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>DIN3</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>DIN4</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>DIN5</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>DIN6</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>DIN7</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>DIN8</string>
      </property>
     </item>
     <item>
@@ -347,6 +397,57 @@
      </rect>
     </property>
    </widget>
+   <widget class="QFrame" name="digitalFrame">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>150</y>
+      <width>311</width>
+      <height>201</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Box</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <widget class="QLabel" name="digitalLabel">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>40</y>
+       <width>71</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Activate on:</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="digitalValue">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>40</y>
+       <width>69</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>Hi</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Lo</string>
+      </property>
+     </item>
+    </widget>
+   </widget>
+   <zorder>textFrame</zorder>
+   <zorder>analogFrame</zorder>
    <zorder>inTypeMenu</zorder>
    <zorder>inPortMenu</zorder>
    <zorder>showNameMenu</zorder>
@@ -357,8 +458,7 @@
    <zorder>triggerNameLabel</zorder>
    <zorder>triggerNameEdit</zorder>
    <zorder>triggerList</zorder>
-   <zorder>textFrame</zorder>
-   <zorder>analogFrame</zorder>
+   <zorder>digitalFrame</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

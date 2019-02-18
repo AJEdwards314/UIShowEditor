@@ -38,7 +38,7 @@ private slots:
 
     void on_actionSettings_triggered();
 
-    void on_upload_clicked();
+   // void on_upload_clicked();
 
     void on_actionUpload_triggered();
 
