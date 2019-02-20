@@ -10,6 +10,7 @@ BehaviorProgramming::BehaviorProgramming(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->textFrame->setHidden(true);
+    ui->digitalFrame->setHidden(true);
     ui->thresholdEdit_2->setDisabled(true);
     ui->thresholdEdit_3->setDisabled(true);
     settingsDialog = new SerialSettingsDialog(this);
@@ -47,6 +48,7 @@ void BehaviorProgramming::on_actionNew_triggered()
     ui->commandText->clear();
     ui->analogFrame->setHidden(false);
     ui->textFrame->setHidden(true);
+    ui->digitalFrame->setHidden(true);
     ui->thresholdEdit->setEnabled(true);
     ui->thresholdEdit_2->setDisabled(true);
     ui->thresholdEdit_3->setDisabled(true);
@@ -105,8 +107,9 @@ void BehaviorProgramming::on_actionOpen_triggered()
         return;
     }
     setWindowTitle(fileName);
-    ui->analogFrame->setHidden(false);
+    ui->analogFrame->setHidden(true);
     ui->textFrame->setHidden(true);
+    ui->digitalFrame->setHidden(false);
     ui->thresholdEdit->setEnabled(true);
     ui->thresholdEdit_2->setDisabled(true);
     ui->thresholdEdit_3->setDisabled(true);
@@ -141,12 +144,23 @@ void BehaviorProgramming::on_actionOpen_triggered()
 
 void BehaviorProgramming::on_inTypeMenu_activated(const QString &arg1)
 {
-    if(arg1 == "Analog" || arg1 == "Digital")
+    if(arg1 == "Analog")
     {
         ui->textFrame->setHidden(true);
         ui->textFrame->setDisabled(true);
         ui->analogFrame->setEnabled(true);
         ui->analogFrame->setHidden(false);
+        ui->digitalFrame->setHidden(true);
+        ui->digitalFrame->setDisabled(true);
+    }
+    else if(arg1 == "Digital")
+    {
+        ui->textFrame->setHidden(true);
+        ui->textFrame->setDisabled(true);
+        ui->digitalFrame->setEnabled(true);
+        ui->digitalFrame->setHidden(false);
+        ui->analogFrame->setHidden(true);
+        ui->analogFrame->setDisabled(true);
     }
     else
     {
@@ -154,6 +168,8 @@ void BehaviorProgramming::on_inTypeMenu_activated(const QString &arg1)
         ui->analogFrame->setDisabled(true);
         ui->textFrame->setEnabled(true);
         ui->textFrame->setHidden(false);
+        ui->digitalFrame->setHidden(true);
+        ui->digitalFrame->setDisabled(true);
     }
 }
 
@@ -179,21 +195,26 @@ void BehaviorProgramming::on_addTrigger_clicked()
     if(ui->inTypeMenu->currentText() == "Text")
     {
         trigger = ui->triggerNameEdit->text() +"," + ui->inTypeMenu->currentText() +
-                "," + ui->inPortMenu->currentText() +"," + ui->commandText->text() + "," + ui->showNameMenu->currentText();
+                "," + ui->inPortMenu->currentText() +","+ ui->showNameMenu->currentText() +"," + ui->commandText->text() ;
+    }
+    else if(ui->inTypeMenu->currentText() == "Digital")
+    {
+        trigger = ui->triggerNameEdit->text() +"," + ui->inTypeMenu->currentText() +
+               "," + ui->inPortMenu->currentText()+"," + ui->showNameMenu->currentText() + "," + ui->digitalValue->currentText();
     }
     else
     {
         if(ui->logicCombo->currentText() == "< X <")
         {
             trigger = ui->triggerNameEdit->text() +"," + ui->inTypeMenu->currentText() +
-                    "," + ui->inPortMenu->currentText() +"," + ui->logicCombo->currentText()
-                    + "," + ui->thresholdEdit_2->text() + "," + ui->thresholdEdit_3->text() +"," + ui->showNameMenu->currentText();
+                    "," + ui->inPortMenu->currentText() +"," +  ui->showNameMenu->currentText()
+                    + "," + ui->logicCombo->currentText() +"," + ui->thresholdEdit_2->text() + "," + ui->thresholdEdit_3->text();
         }
         else
         {
             trigger = ui->triggerNameEdit->text() +"," + ui->inTypeMenu->currentText() +
-                    "," + ui->inPortMenu->currentText() +"," + ui->logicCombo->currentText()
-                    + "," +  ui->thresholdEdit->text() +"," + ui->showNameMenu->currentText();
+                    "," + ui->inPortMenu->currentText() +"," + ui->showNameMenu->currentText() + "," + ui->logicCombo->currentText()
+                    + ","   +  ui->thresholdEdit->text();
         }
     }
     ui->triggerList->addItem(trigger);
@@ -265,3 +286,4 @@ void BehaviorProgramming::on_actionUpload_triggered()
     QFile *f = &file;
     ControllerAdapter::getInstance()->sendBehavior(f);
 }
+
