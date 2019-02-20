@@ -1,11 +1,12 @@
 #include "leddialog.h"
 #include "ui_leddialog.h"
 #include "ledtrack.h"
+#include "portconfig.h"
 
 #include <QAbstractButton>
 #include <QDebug>
 
-LEDDialog::LEDDialog(QWidget *parent, QString filename, QString name, int offset, QString port, QString colorName) :
+LEDDialog::LEDDialog(QWidget *parent, QString filename, QString name, int offset, QString port) :
     QDialog(parent),
     ui(new Ui::LEDDialog)
 {
@@ -14,8 +15,9 @@ LEDDialog::LEDDialog(QWidget *parent, QString filename, QString name, int offset
     ui->filenameLbl->setText(filename);
     ui->nameBox->setText(name);
     ui->offsetBox->setText(QString::number(offset));
-    ui->portBox->setText(port);
-    ui->colorBox->setText(colorName);
+    ui->portCB->addItems(PortConfig::getInstance()->getPorts("DOUT"));
+    ui->portCB->setCurrentText(port);
+    //ui->colorBox->setText(colorName);
 
 }
 
@@ -37,5 +39,6 @@ void LEDDialog::on_buttonBox_clicked(QAbstractButton *button)
 
 void LEDDialog::applyToParent()
 {
-    parentTrack->apply(ui->nameBox->text(), ui->offsetBox->text().toInt(), ui->portBox->text(), ui->colorBox->text());
+    QString port = ui->portCB->currentText();
+    parentTrack->apply(ui->nameBox->text(), ui->offsetBox->text().toInt(), port);
 }

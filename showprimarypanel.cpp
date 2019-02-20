@@ -21,12 +21,11 @@
 #include "wavtrack.h"
 #include "controlleradapter.h"
 #include "point.h"
+#include "portconfig.h"
 
 
-ShowPrimaryPanel::ShowPrimaryPanel(QWidget *parent, ControllerAdapter * adapter) : QWidget(parent)
+ShowPrimaryPanel::ShowPrimaryPanel(QWidget *parent) : QWidget(parent)
 {
-    this->adapter = adapter;
-
     //this->setMouseTracking(true);
     this->setAcceptDrops(true);
     //this->setMinimumWidth(1500);
@@ -96,17 +95,28 @@ void ShowPrimaryPanel::openTracks(QStringList &filenames, QList<int> * offsets, 
             offset = offsets->at(i);
         if(ports != nullptr)
             port = ports->at(i);
+        else {
+            if(fileinfo.suffix() == "lsr") {
+                QStringList portList = PortConfig::getInstance()->getPorts("DOUT");
+                if(portList.length() == 0)
+                    port = "DOUT1";
+                else
+                    port = portList[0];
+            } else {
+                QStringList portList = PortConfig::getInstance()->getPorts("SRV");
+                if(portList.length() == 0)
+                    port = "SRV1";
+                else
+                    port = portList[0];
+            }
+        }
+
 
         QList<QString> currentArgs;
         if(args != nullptr)
             currentArgs = args->at(i);
         if(fileinfo.suffix() == "lsr") {
-            if(currentArgs.length() == 0)
-                track = new LEDTrack(this, pixpersec, file, offset, port, "Green");
-            else {
-                QString colorName = currentArgs[0];
-                track = new LEDTrack(this, pixpersec, file, offset, port, colorName );
-            }
+            track = new LEDTrack(this, pixpersec, file, offset, port);
         } else if(fileinfo.suffix() == "osr") {
             if(currentArgs.length() == 0)
                 track = new MotorTrack(this, pixpersec, file, offset, port);
@@ -131,10 +141,17 @@ void ShowPrimaryPanel::newTrack(QStringList * recordingArgs, QList<Point> * poin
     Track * track;
     if(recordingArgs->at(0) == "MOT") //Motor Track
         track = new MotorTrack(this, pixpersec, recordingArgs, points);
+    else if(recordingArgs->at(0) == "LED")
+        track = new LEDTrack(this, pixpersec, recordingArgs, points);
     layout()->addWidget(track);
     tracks->append(track);
+
+    QMessageBox msgBox;
+    msgBox.setText("Please Save the New Track");
+    msgBox.exec();
+
+    track->saveTrackAsParent();
     updateChildren();
-    trackShowDataUpdated();
 }
 
 void ShowPrimaryPanel::trackShowDataUpdated()
@@ -153,21 +170,21 @@ void ShowPrimaryPanel::removeTrack(Track *track)
     showChanged = true;
 }
 
-void ShowPrimaryPanel::save()
+bool ShowPrimaryPanel::save()
 {
     if(!hasShow()) {
         createEmptyShow();
-        saveAs();
-        return;
+        return saveAs();
     }
 
     showBase->save();
     showChanged = false;
     generateShowSavedRv();
     updateTitle();
+    return true;
 }
 
-void ShowPrimaryPanel::saveAs()
+bool ShowPrimaryPanel::saveAs()
 {
     if(!hasShow()) {
         createEmptyShow();
@@ -175,13 +192,14 @@ void ShowPrimaryPanel::saveAs()
 
     QString filepath = QFileDialog::getSaveFileName(this, tr("Save Show"),"",tr("Animaniacs Show Files (*.shw)"));
     if(filepath == "")
-        return;
+        return false;
     QFile * newSourceFile = new QFile(filepath);
 
     showBase->saveAs(newSourceFile);
     showChanged = false;
     generateShowSavedRv();
     updateTitle();
+    return true;
 }
 
 void ShowPrimaryPanel::updateTitle()
@@ -205,37 +223,40 @@ void ShowPrimaryPanel::objectGrabbed(Track* widget)
 }
 
 
-void ShowPrimaryPanel::transferShow()
+bool ShowPrimaryPanel::transferShow()
 {
     if(!hasShow()) {
-        save();
+        if(!save())
+            return false;
     }
 
     if(showSavedRv == showTransferedRv)
-        return;
+        return true;
 
     for(int i = 0; i < tracks->length(); i++)
-        adapter->sendTrack(tracks->at(i)->getFile());
-    adapter->sendShow(showBase->getFile());
+        ControllerAdapter::getInstance()->sendTrack(tracks->at(i)->getFile());
+    ControllerAdapter::getInstance()->sendShow(showBase->getFile());
+    ControllerAdapter::getInstance()->sendPortConfig(PortConfig::getInstance()->getSourceFile());
 
     showTransferedRv = showSavedRv;
+    return true;
 }
 
 void ShowPrimaryPanel::startShow()
 {
     if(!hasShow())
         save();
-    adapter->startShow(showBase->getFilename());
+    ControllerAdapter::getInstance()->startShow(showBase->getFilename());
 }
 
 void ShowPrimaryPanel::pauseShow()
 {
-    adapter->pauseShow();
+    ControllerAdapter::getInstance()->pauseShow();
 }
 
 void ShowPrimaryPanel::stopShow()
 {
-    adapter->stopShow();
+    ControllerAdapter::getInstance()->stopShow();
 }
 
 void ShowPrimaryPanel::configureRecording(QStringList* args)
@@ -243,18 +264,18 @@ void ShowPrimaryPanel::configureRecording(QStringList* args)
     if(!hasShow())
         save();
     recordingArgs = new QStringList(*args);
-    adapter->configureRecording(showBase->getFilename(), args);
+    ControllerAdapter::getInstance()->configureRecording(showBase->getFilename(), args);
 }
 
 void ShowPrimaryPanel::startRecording()
 {
-    adapter->startRecording();
+    ControllerAdapter::getInstance()->startRecording();
 }
 
 void ShowPrimaryPanel::stopRecording()
 {
     QList<Point> * pointList;
-    adapter->stopRecording(this);
+    ControllerAdapter::getInstance()->stopRecording(this);
 }
 
 

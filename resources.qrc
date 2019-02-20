@@ -48,5 +48,7 @@
         <file>wavdialog.h</file>
         <file>wavtrack.cpp</file>
         <file>wavtrack.h</file>
+        <file>images/PortConfig.png</file>
+        <file>images/PortTest.png</file>
     </qresource>
 </RCC>

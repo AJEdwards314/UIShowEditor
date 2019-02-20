@@ -15,7 +15,7 @@ class MotorDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit MotorDialog(QWidget *parent, QString filename, QString name, int offset, QString port, int maxVal, int minVal, int defVal, bool reverse);
+    explicit MotorDialog(QWidget *parent, QString filename, QString name, int offset, QString port);
     ~MotorDialog();
 
 protected:

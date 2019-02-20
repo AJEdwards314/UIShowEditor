@@ -9,18 +9,22 @@
 #include "controlleradapter.h"
 #include "serialsettingsdialog.h"
 #include "recordingconfigurationdialog.h"
+#include "portconfigdialog.h"
+#include "portconfig.h"
+#include "porttestdialog.h"
 
-ShowEditorWindow::ShowEditorWindow(ControllerAdapter * adapter, QWidget *parent) :
+ShowEditorWindow::ShowEditorWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::ShowEditorWindow)
 {
     ui->setupUi(this);
     createSerialToolbar();
     createPreviewingToolbar();
-    this->adapter = adapter;
-    panel = new ShowPrimaryPanel(this, adapter);
+    createToolsToolbar();
+    panel = new ShowPrimaryPanel(this);
     settingsDialog = new SerialSettingsDialog(this);
     recordingConfigurationDialog = new RecordingConfigurationDialog(this);
+    portConfigDialog = new PortConfigDialog(PortConfig::getInstance());
 
     //panel->resize(500, 500);
     //panel->setMinimumSize(1000, 500);
@@ -38,6 +42,10 @@ ShowEditorWindow::ShowEditorWindow(ControllerAdapter * adapter, QWidget *parent)
     stopAct->setEnabled(false);
     recordAct->setEnabled(false);
     configureRecordingAct->setEnabled(false);
+    portConfigAct->setEnabled(true);
+    portTestAct->setEnabled(false);
+
+    connect(ControllerAdapter::getInstance(), &ControllerAdapter::stopPlayback, this, &ShowEditorWindow::stop_triggered);
 }
 
 ShowEditorWindow::~ShowEditorWindow()
@@ -58,7 +66,7 @@ void ShowEditorWindow::on_actionOpen_Track_triggered()
     panel->openTracks(filenames);
 
     QFile file(filenames[0]);
-    qInfo() << "Track Send Returned: " << adapter->sendTrack(&file);
+    qInfo() << "Track Send Returned: " << ControllerAdapter::getInstance()->sendTrack(&file);
     //qInfo() << "Pause returned: " << adapter.pauseShow();
     return;
 }
@@ -86,7 +94,7 @@ void ShowEditorWindow::on_actionSave_As_triggered()
 void ShowEditorWindow::connect_triggered()
 {
     SerialSettingsDialog::Settings settings = settingsDialog->settings();
-    int result = adapter->startSerialConnection(settings.name, QSerialPort::BaudRate(settings.baudRate));
+    int result = ControllerAdapter::getInstance()->startSerialConnection(settings.name, QSerialPort::BaudRate(settings.baudRate));
     if(result != 0)
         return; //TODO issue error dialog
     playAct->setEnabled(true);
@@ -94,11 +102,12 @@ void ShowEditorWindow::connect_triggered()
     setEnabledActions();
     connectAct->setEnabled(false);
     disconnectAct->setEnabled(true);
+    portTestAct->setEnabled(true);
 }
 
 void ShowEditorWindow::disconnect_triggered()
 {
-    adapter->stopSerialConnection();
+    ControllerAdapter::getInstance()->stopSerialConnection();
     serialDisconnected();
 }
 
@@ -114,9 +123,11 @@ void ShowEditorWindow::settings_triggered()
 
 void ShowEditorWindow::play_triggered()
 {
-    if(playbackState == STOPPED)
-        panel->transferShow();
-    panel->startShow();//TODO transfers need to be queued and stop recording needs to block
+    if(playbackState == STOPPED) {
+        if(!panel->transferShow())
+            return;
+    }
+    panel->startShow();
     updatePlaybackState(PLAY);
 }
 
@@ -149,16 +160,31 @@ void ShowEditorWindow::configure_recording_triggered()
     if(result != QDialog::Accepted)
         return;
 
-    panel->transferShow();
+    if(!panel->transferShow())
+        return;
     QStringList args;
     RecordingConfigurationDialog::Settings settings = recordingConfigurationDialog->settings;
-    if(settings.recordingType == RecordingConfigurationDialog::MOTOR_RECORDING)
-        args << "MOT" << settings.motorPort << QString::number(settings.maxVal) << QString::number(settings.minVal) << QString::number(settings.midVal) << QString::number(settings.reverse);
-    else
+    if(settings.recordingType == RecordingConfigurationDialog::MOTOR_RECORDING) {
+        args << "MOT" << settings.motorPort;
+    } else {
         args << "LED" << settings.ledPort;
+    }
     panel->configureRecording(&args);
     recordingConfigured = true;
     setEnabledActions();
+}
+
+void ShowEditorWindow::port_config_triggered()
+{
+    portConfigDialog->show();
+    portConfigDialog->exec();
+}
+
+void ShowEditorWindow::port_test_triggerered()
+{
+    ControllerAdapter::getInstance()->sendPortConfig(PortConfig::getInstance()->getSourceFile());
+    PortTestDialog * dialog = new PortTestDialog();
+    dialog->exec();
 }
 
 
@@ -240,6 +266,26 @@ void ShowEditorWindow::createPreviewingToolbar()
 
 }
 
+void ShowEditorWindow::createToolsToolbar() {
+    QMenu * toolsMenu = menuBar()->addMenu(tr("&Tools"));
+    QToolBar * toolsToolbar = addToolBar(tr("Tools"));
+
+    const QIcon portConfigIcon = QIcon(":/images/PortConfig.png");
+    portConfigAct = new QAction(portConfigIcon, tr("Configure Ports"), this);
+    portConfigAct->setStatusTip(tr("Set Up Port Output/Input Types and Characteristics"));
+    connect(portConfigAct, &QAction::triggered, this, &ShowEditorWindow::port_config_triggered);
+    toolsMenu->addAction(portConfigAct);
+    toolsToolbar->addAction(portConfigAct);
+
+    const QIcon portTestIcon = QIcon(":/images/PortTest.png");
+    portTestAct = new QAction(portTestIcon, tr("Test Port Configuration"));
+    portTestAct->setStatusTip(tr("Test Input and Output Ports"));
+    connect(portTestAct, &QAction::triggered, this, &ShowEditorWindow::port_test_triggerered);
+    toolsMenu->addAction(portTestAct);
+    toolsToolbar->addAction(portTestAct);
+
+}
+
 
 void ShowEditorWindow::updatePlaybackState(PlaybackEvent playbackEvent)
 {
@@ -293,12 +339,14 @@ void ShowEditorWindow::setEnabledActions()
             configureRecordingAct->setEnabled(false);
             break;
         }
+        portTestAct->setEnabled(true);
     } else { //Serial not open
         playAct->setEnabled(false);
         pauseAct->setEnabled(false);
         stopAct->setEnabled(false);
         recordAct->setEnabled(false);
         configureRecordingAct->setEnabled(false);
+        portTestAct->setEnabled(false);
     }
 }
 

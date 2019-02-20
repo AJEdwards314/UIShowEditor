@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>300</height>
+    <height>154</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -59,6 +59,13 @@
        </property>
       </widget>
      </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="offsetBox">
+       <property name="text">
+        <string>000</string>
+       </property>
+      </widget>
+     </item>
      <item row="2" column="0">
       <widget class="QLabel" name="portLbl">
        <property name="text">
@@ -66,33 +73,8 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="colorLabel">
-       <property name="text">
-        <string>Color:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QLineEdit" name="colorBox">
-       <property name="text">
-        <string>Green</string>
-       </property>
-      </widget>
-     </item>
      <item row="2" column="1">
-      <widget class="QLineEdit" name="portBox">
-       <property name="text">
-        <string>DIO13</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="offsetBox">
-       <property name="text">
-        <string>000</string>
-       </property>
-      </widget>
+      <widget class="QComboBox" name="portCB"/>
      </item>
     </layout>
    </item>

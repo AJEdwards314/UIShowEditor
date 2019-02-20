@@ -7,9 +7,9 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    ControllerAdapter adapter;
+    ControllerAdapter::setInstance();
     //adapter.startSerialConnection("COM7", QSerialPort::Baud9600);
-    HomeWindow w(&adapter);
+    HomeWindow w;
     //ShowEditorWindow w(&adapter);
     w.show();
 
