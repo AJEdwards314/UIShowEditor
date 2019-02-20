@@ -14,5 +14,7 @@
         <file>Shows/Greet.shw.txt</file>
         <file>Shows/Sleep.shw.txt</file>
         <file>images/Animaniacs.png</file>
+        <file>images/PortConfig.png</file>
+        <file>images/PortTest.png</file>
     </qresource>
 </RCC>

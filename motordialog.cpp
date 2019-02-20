@@ -1,11 +1,12 @@
 #include "motordialog.h"
 #include "ui_motordialog.h"
 #include "motortrack.h"
+#include "portconfig.h"
 
 #include <QAbstractButton>
 #include <QDebug>
 
-MotorDialog::MotorDialog(QWidget *parent, QString filename, QString name, int offset, QString port, int maxVal, int minVal, int defVal, bool reverse) :
+MotorDialog::MotorDialog(QWidget *parent, QString filename, QString name, int offset, QString port) :
     QDialog(parent),
     ui(new Ui::MotorDialog)
 {
@@ -14,11 +15,8 @@ MotorDialog::MotorDialog(QWidget *parent, QString filename, QString name, int of
     ui->filenameLbl->setText(filename);
     ui->nameBox->setText(name);
     ui->offsetBox->setText(QString::number(offset));
-    ui->portBox->setText(port);
-    ui->maxBox->setText(QString::number(maxVal));
-    ui->minBox->setText(QString::number(minVal));
-    ui->defaultBox->setText(QString::number(defVal));
-    ui->reverseBox->setCheckState(reverse ? Qt::Checked : Qt::Unchecked);
+    ui->portCB->addItems(PortConfig::getInstance()->getPorts("SRV"));
+    ui->portCB->setCurrentText(port);
 
 }
 
@@ -40,5 +38,6 @@ void MotorDialog::on_buttonBox_clicked(QAbstractButton *button)
 
 void MotorDialog::applyToParent()
 {
-    parentTrack->apply(ui->nameBox->text(), ui->offsetBox->text().toInt(), ui->portBox->text(), ui->maxBox->text().toInt(), ui->minBox->text().toInt(), ui->defaultBox->text().toInt(), ui->reverseBox->checkState() == Qt::Checked);
+    QString port = ui->portCB->currentText();
+    parentTrack->apply(ui->nameBox->text(), ui->offsetBox->text().toInt(), port);
 }

@@ -9,8 +9,9 @@
 #include "leddialog.h"
 #include "showprimarypanel.h"
 #include "point.h"
+#include "portconfig.h"
 
-LEDTrack::LEDTrack(QWidget *parent, float pixpersec, QFile *sourceFile, int offset, QString port, QString colorName) : Track (parent, pixpersec, offset, sourceFile, port)
+LEDTrack::LEDTrack(QWidget *parent, float pixpersec, QFile *sourceFile, int offset, QString port) : Track (parent, pixpersec, offset, sourceFile, port)
 {
     if(sourceFile == nullptr) {
         qInfo() << "Source File Not Specified";
@@ -34,8 +35,7 @@ LEDTrack::LEDTrack(QWidget *parent, float pixpersec, QFile *sourceFile, int offs
     title = list[1];
 
     this->port = port;
-    this->color = Qt::green;
-    setColor(colorName);
+    setColor();
     /*
     line = in.readLine();
     list = line.split(QRegularExpression(","));
@@ -82,7 +82,16 @@ LEDTrack::LEDTrack(QWidget *parent, float pixpersec, QFile *sourceFile, int offs
     init();
 }
 
-void LEDTrack::apply(QString name, int offset, QString port, QString colorName)
+LEDTrack::LEDTrack(QWidget *parent, float pixpersec, QStringList * args, QList<Point> * points)
+{
+    port = args->at(1);
+    title = "";
+    this->points = QList<Point>(*points);
+    length = points->last().ms;
+    init();
+}
+
+void LEDTrack::apply(QString name, int offset, QString port)
 {
     bool showChange = false;
     bool trackChange = false;
@@ -99,9 +108,7 @@ void LEDTrack::apply(QString name, int offset, QString port, QString colorName)
         showChange = true;
     this->port = port;
 
-    if(this->colorName != colorName)
-        showChange = true;
-    setColor(colorName);
+    setColor();
 
     update();
     if(showChange)
@@ -133,10 +140,16 @@ void LEDTrack::paintEvent(QPaintEvent *event)
     }
 }
 
+void LEDTrack::init() {
+    setColor();
+
+    Track::init();
+}
+
 void LEDTrack::propertiesOpen()
 {
     qInfo() << "Opening LED Properties";
-    LEDDialog *dialog = new LEDDialog(this, filename, title, offset, port, colorName);
+    LEDDialog *dialog = new LEDDialog(this, filename, title, offset, port);
     dialog->show();
 }
 
@@ -158,14 +171,15 @@ void LEDTrack::saveTrackAs()
 {
     QString newFilepath = QFileDialog::getSaveFileName(this, tr("Save Track"),"",tr("Animaniacs LED Files (*.lsr)"));
     if(newFilepath == "")
-        return;
+        newFilepath = "untitled.lsr";
     this->setSourceFile(new QFile(newFilepath));
     saveTrack();
 }
 
-void LEDTrack::setColor(QString colorName)
+void LEDTrack::setColor()
 {
-    this->colorName = colorName;
+    PortConfig::LEDConfig * config = (PortConfig::LEDConfig *) PortConfig::getInstance()->getOutputConfig(port);
+    this->colorName = config->color;
     if(colorName == "Green" || colorName == "green" || colorName == "g" || colorName == "G")
         color = Qt::green;
     else if(colorName == "Red" || colorName == "red" || colorName == "r" || colorName == "R")

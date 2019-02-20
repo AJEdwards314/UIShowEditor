@@ -15,7 +15,7 @@ class LEDDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit LEDDialog(QWidget *parent, QString filename, QString name, int offset, QString port, QString colorName);
+    explicit LEDDialog(QWidget *parent, QString filename, QString name, int offset, QString port);
     ~LEDDialog();
 
 protected:

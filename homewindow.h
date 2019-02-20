@@ -1,7 +1,8 @@
 #ifndef HOMEWINDOW_H
 #define HOMEWINDOW_H
-#include "controlleradapter.h"
 #include <QMainWindow>
+
+class ControllerAdapter;
 
 namespace Ui {
 class HomeWindow;
@@ -12,8 +13,8 @@ class HomeWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit HomeWindow(ControllerAdapter *adapter, QWidget *parent = nullptr);
-    ~HomeWindow();
+    explicit HomeWindow(QWidget *parent = nullptr);
+    ~HomeWindow() override;
 
 
 private slots:
@@ -23,7 +24,7 @@ private slots:
 
 private:
     Ui::HomeWindow *ui;
-    ControllerAdapter *adapter;
+    void showEvent(QShowEvent * event) override;
 };
 
 #endif // HOMEWINDOW_H

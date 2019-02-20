@@ -4,7 +4,7 @@
 #include <QToolBar>
 #include "controlleradapter.h"
 #include "serialsettingsdialog.h"
-BehaviorProgramming::BehaviorProgramming(ControllerAdapter * adapter, QWidget *parent) :
+BehaviorProgramming::BehaviorProgramming(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::BehaviorProgramming)
 {
@@ -12,21 +12,19 @@ BehaviorProgramming::BehaviorProgramming(ControllerAdapter * adapter, QWidget *p
     ui->textFrame->setHidden(true);
     ui->thresholdEdit_2->setDisabled(true);
     ui->thresholdEdit_3->setDisabled(true);
-    this->adapter = adapter;
     settingsDialog = new SerialSettingsDialog(this);
     setWindowTitle("Unsaved");
 
     ui->actionConnect->setEnabled(false);
     ui->actionDisconnect->setEnabled(false);
     ui->actionSettings->setEnabled(true);
+
     createSerialToolbar();
+    ui->actionConnect->setEnabled(false);
+    ui->actionDisconnect->setEnabled(false);
+
+
     QDir directory(":/Shows");
-    directory.setFilter(QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks);
-    QFileInfoList list = directory.entryInfoList();
-    for (int i = 0; i < list.size(); ++i) {
-            QFileInfo fileInfo = list.at(i);
-            ui->showNameMenu->addItem(fileInfo.fileName());
-        }
 
 }
 BehaviorProgramming::~BehaviorProgramming()
@@ -80,11 +78,23 @@ void BehaviorProgramming::on_actionSave_triggered()
     }
     out << "End Triggers";
 
+    file.close();
+
+    QDir directory = fileInfo.absoluteDir();
+    directory.setFilter(QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks);
+    QFileInfoList list = directory.entryInfoList();
+    for (int i = 0; i < list.size(); ++i) {
+        QFileInfo fileInfo = list.at(i);
+        if(fileInfo.suffix() == "shw")
+            ui->showNameMenu->addItem(fileInfo.fileName());
+    }
+
+
 }
 
 void BehaviorProgramming::on_actionOpen_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, "Open the file");
+    QString fileName = QFileDialog::getOpenFileName(this, "Open the file", "", "*.bmo");
     QFile file(fileName);
     QFileInfo fileInfo(file.fileName());
     fileName = fileInfo.fileName();
@@ -107,7 +117,7 @@ void BehaviorProgramming::on_actionOpen_triggered()
     text = in.readLine();
     if(text != "Triggers")
     {
-        QMessageBox::warning(this, "Warning", "Not a .bmo file! " );
+        QMessageBox::warning(this, "Warning", "File Corrupted" );
         return;
     }
     text = in.readLine();
@@ -117,6 +127,15 @@ void BehaviorProgramming::on_actionOpen_triggered()
         text = in.readLine();
     }
     file.close();
+
+    QDir directory = fileInfo.absoluteDir();
+    directory.setFilter(QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks);
+    QFileInfoList list = directory.entryInfoList();
+    for (int i = 0; i < list.size(); ++i) {
+        QFileInfo fileInfo = list.at(i);
+        if(fileInfo.suffix() == "shw")
+            ui->showNameMenu->addItem(fileInfo.fileName());
+    }
 
 }
 
@@ -183,7 +202,7 @@ void BehaviorProgramming::on_addTrigger_clicked()
 void BehaviorProgramming::on_actionConnect_triggered()
 {
     SerialSettingsDialog::Settings settings = settingsDialog->settings();
-    int result = adapter->startSerialConnection(settings.name, QSerialPort::BaudRate(settings.baudRate));
+    int result = ControllerAdapter::getInstance()->startSerialConnection(settings.name, QSerialPort::BaudRate(settings.baudRate));
     if(result != 0)
         return; //TODO issue error dialog
     serialOpen = true;
@@ -194,7 +213,7 @@ void BehaviorProgramming::on_actionConnect_triggered()
 
 void BehaviorProgramming::on_actionDisconnect_triggered()
 {
-    adapter->stopSerialConnection();
+    ControllerAdapter::getInstance()->stopSerialConnection();
     serialDisconnected();
 }
 
@@ -244,5 +263,5 @@ void BehaviorProgramming::on_actionUpload_triggered()
     QString fileName = QFileDialog::getOpenFileName(this, "Open the file");
     QFile file(fileName);
     QFile *f = &file;
-    adapter->sendBehavior(f);
+    ControllerAdapter::getInstance()->sendBehavior(f);
 }

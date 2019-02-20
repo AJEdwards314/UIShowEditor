@@ -35,11 +35,19 @@ SOURCES += \
     wavtrack.cpp \
     track.cpp \
     controlleradapter.cpp \
-    serialdaemon.cpp \
     serialsettingsdialog.cpp \
     recordingconfigurationdialog.cpp \
     behaviorprogramming.cpp \
-    homewindow.cpp
+    homewindow.cpp \
+    portconsts.cpp \
+    portconfig.cpp \
+    portconfigdialog.cpp \
+    outputportconfigwidget.cpp \
+    inputportconfigwidget.cpp \
+    porttestdialog.cpp \
+    portreaddaemon.cpp \
+    serialtxdaemon.cpp \
+    serialrxdaemon.cpp
 
 HEADERS += \
         showeditorwindow.h \
@@ -54,11 +62,19 @@ HEADERS += \
     wavtrack.h \
     controlleradapter.h \
     point.h \
-    serialdaemon.h \
     serialsettingsdialog.h \
     recordingconfigurationdialog.h \
     behaviorprogramming.h \
-    homewindow.h
+    homewindow.h \
+    portconsts.h \
+    portconfig.h \
+    portconfigdialog.h \
+    outputportconfigwidget.h \
+    inputportconfigwidget.h \
+    porttestdialog.h \
+    portreaddaemon.h \
+    serialtxdaemon.h \
+    serialrxdaemon.h
 
 
 FORMS += \
@@ -69,7 +85,11 @@ FORMS += \
     serialsettingsdialog.ui \
     recordingconfiguration.ui \
     behaviorprogramming.ui \
-    homewindow.ui
+    homewindow.ui \
+    portconfigdialog.ui \
+    outputportconfigwidget.ui \
+    inputportconfigwidget.ui \
+    porttestdialog.ui
 
 QT += \
     serialport
