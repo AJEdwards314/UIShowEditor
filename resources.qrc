@@ -14,40 +14,6 @@
         <file>Shows/Goodbye.shw</file>
         <file>Shows/Greet.shw</file>
         <file>Shows/Sleep.shw</file>
-        <file>behaviorprogramming.cpp</file>
-        <file>behaviorprogramming.h</file>
-        <file>controlleradapter.cpp</file>
-        <file>controlleradapter.h</file>
-        <file>homewindow.cpp</file>
-        <file>homewindow.h</file>
-        <file>leddialog.cpp</file>
-        <file>leddialog.h</file>
-        <file>ledtrack.cpp</file>
-        <file>ledtrack.h</file>
-        <file>main.cpp</file>
-        <file>motordialog.cpp</file>
-        <file>motordialog.h</file>
-        <file>motortrack.cpp</file>
-        <file>motortrack.h</file>
-        <file>point.h</file>
-        <file>recordingconfigurationdialog.cpp</file>
-        <file>recordingconfigurationdialog.h</file>
-        <file>serialdaemon.cpp</file>
-        <file>serialdaemon.h</file>
-        <file>serialsettingsdialog.cpp</file>
-        <file>serialsettingsdialog.h</file>
-        <file>showbaseclass.cpp</file>
-        <file>showbaseclass.h</file>
-        <file>showeditorwindow.cpp</file>
-        <file>showeditorwindow.h</file>
-        <file>showprimarypanel.cpp</file>
-        <file>showprimarypanel.h</file>
-        <file>track.cpp</file>
-        <file>track.h</file>
-        <file>wavdialog.cpp</file>
-        <file>wavdialog.h</file>
-        <file>wavtrack.cpp</file>
-        <file>wavtrack.h</file>
         <file>images/PortConfig.png</file>
         <file>images/PortTest.png</file>
     </qresource>
