@@ -5,8 +5,11 @@
 #include <QSemaphore>
 #include <QtSerialPort/QSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
-#include "serialdaemon.h"
+#include "serialtxdaemon.h"
+#include "porttestdialog.h"
 
+class SerialRxDaemon;
+class PortReadDaemon;
 class QFile;
 class QSerialPort;
 class ShowPrimaryPanel;
@@ -16,40 +19,60 @@ class ControllerAdapter : public QObject
 {
     Q_OBJECT
 public:
-    explicit ControllerAdapter(QObject *parent = nullptr);
+    static ControllerAdapter * getInstance();
+
+    SerialRxDaemon * getRxDaemon();
+
+    static void setInstance(QObject * parent = nullptr);
+
     int startSerialConnection(QString port, QSerialPort::BaudRate baud);
     void stopSerialConnection();
 
     int sendTrack(QFile *trackFile);
     int sendShow(QFile *showFile);
     int sendBehavior(QFile *behaviorFile);
+    int sendPortConfig(QFile * portConfigFile);
     int startShow(QString filename);
     int pauseShow();
     int stopShow();
     int configureRecording(QString filename, QStringList* args);
     int startRecording();
     int stopRecording(ShowPrimaryPanel * showPanel);
+    int drivePort(QString port, int val);
+    int killPort(QString port);
+    int readPort(PortReadDaemon * portReadDaemon, QString port);
+
+private:
+    explicit ControllerAdapter(QObject *parent = nullptr);
+    static ControllerAdapter * instance;
+
+//signals:
+//    void closePort();
 
 protected:
     QSemaphore * serialPortSem;
     QSerialPort * serialPort;
     QSerialPortInfo serialPortInfo;
+    SerialRxDaemon * rxDaemon;
 
-    int createDaemon(SerialDaemon ** daemon, SerialDaemon::SignalType signalType, QByteArray * payload, QByteArray * dataPayload = nullptr);
-    int startDaemon(SerialDaemon::SignalType signalType, QByteArray * payload, QByteArray * dataPayload = nullptr);
+    int createDaemon(SerialTxDaemon ** daemon, SerialTxDaemon::SignalType signalType, QByteArray * payload, QByteArray * dataPayload = nullptr);
+    int startDaemon(SerialTxDaemon::SignalType signalType, QByteArray * payload, QByteArray * dataPayload = nullptr);
     QString getFilename(QFile *file);
     QString padFilename(QString filename);
     QByteArray * readFile(QFile *file);
     QString getLengthString(int length, int padLength = 10);
 
 
-    int sendFile(SerialDaemon::SignalType signalType, QFile *file);
+    int sendFile(SerialTxDaemon::SignalType signalType, QFile *file);
+
     int getnextId();
 
     int id = -1;
 signals:
-
+    void stopPlayback();
 public slots:
+    void respRxed(SerialTxDaemon::SignalType type, QString payload);
+    void serialError(QSerialPort::SerialPortError error);
 };
 
 #endif // CONTROLLERADAPTER_H

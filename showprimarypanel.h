@@ -14,7 +14,7 @@ class ShowPrimaryPanel : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ShowPrimaryPanel(QWidget *parent = nullptr, ControllerAdapter * adapter = nullptr); //Parent will be of type ShowEditorWindow
+    explicit ShowPrimaryPanel(QWidget *parent = nullptr); //Parent will be of type ShowEditorWindow
 
     //Show and Track Handling
     void openShow(QString filename);
@@ -24,8 +24,8 @@ public:
     void newTrack(QStringList * recordingArgs, QList<Point> * points);
     void trackShowDataUpdated();
     void removeTrack(Track* track);
-    void save();
-    void saveAs();
+    bool save();
+    bool saveAs();
     inline bool hasShow() {return showBase != nullptr;}
     inline QList<Track*>* getTracks() {return tracks;}
 
@@ -34,7 +34,7 @@ public:
     void objectGrabbed(Track* widget);
 
     //UI Handles from Main Window
-    void transferShow();
+    bool transferShow();
     void startShow();
     void pauseShow();
     void stopShow();
@@ -44,11 +44,10 @@ public:
 
 private:
     //Key References
-    ShowEditorWindow *parentWindow;
-    ControllerAdapter * adapter;
+    ShowEditorWindow * parentWindow;
 
     //Key Children
-    ShowBaseClass *showBase;
+    ShowBaseClass * showBase;
     QList<Track*> * tracks;
 
     //Attributes

@@ -16,7 +16,7 @@ class BehaviorProgramming : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit BehaviorProgramming(ControllerAdapter * adapter, QWidget *parent = nullptr);
+    explicit BehaviorProgramming(QWidget *parent = nullptr);
     ~BehaviorProgramming();
 private slots:
     void on_actionNew_triggered();
@@ -38,14 +38,11 @@ private slots:
 
     void on_actionSettings_triggered();
 
-    void on_upload_clicked();
-
     void on_actionUpload_triggered();
 
 private:
     Ui::BehaviorProgramming *ui;
     QString currentFile = "";
-    ControllerAdapter * adapter;
     SerialSettingsDialog * settingsDialog;
     bool serialOpen = false;
 

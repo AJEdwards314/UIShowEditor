@@ -1,7 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <author/>
- <comment/>
- <exportmacro/>
  <class>InputPortConfigWidget</class>
  <widget class="QWidget" name="InputPortConfigWidget">
   <property name="geometry">
@@ -9,13 +7,25 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>300</height>
+    <height>38</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="QLabel" name="portNumLBL">
+     <property name="text">
+      <string>1</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="typeCB"/>
+   </item>
+  </layout>
  </widget>
- <pixmapfunction/>
+ <resources/>
  <connections/>
 </ui>

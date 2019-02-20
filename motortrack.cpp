@@ -11,6 +11,7 @@
 #include "motordialog.h"
 #include "showprimarypanel.h"
 #include "point.h"
+#include "portconfig.h"
 
 MotorTrack::MotorTrack(QWidget *parent, float pixpersec, QFile *sourceFile, int offset, QString port, bool reverse) : Track (parent, pixpersec, offset, sourceFile, port)
 {
@@ -52,23 +53,19 @@ MotorTrack::MotorTrack(QWidget *parent, float pixpersec, QFile *sourceFile, int 
 
     line = in.readLine();
     list = line.split(QRegularExpression(","));
-    if(list[0] != "MaxVal")
-        return; //TODO File Corrupted
-    maxVal =  list[1].toInt();
+    while(list[0] != "Points") {
+        if(list[0] == "MaxVal") {
+            //maxVal =  list[1].toInt();
+        } else if(list[0] == "MinVal") {
+            //minVal = list[1].toInt();
+        } else if(list[0] == "MidVal") {
+            //midVal = list[1].toInt();
+        }
 
-    line = in.readLine();
-    list = line.split(QRegularExpression(","));
-    if(list[0] != "MinVal")
-        return; //TODO File Corrupted
-    minVal = list[1].toInt();
+        line = in.readLine();
+        list = line.split(QRegularExpression(","));
+    }
 
-    line = in.readLine();
-    list = line.split(QRegularExpression(","));
-    if(list[0] != "MidVal")
-        return; //TODO File Corrupted
-    midVal = list[1].toInt();
-
-    line = in.readLine();
     if(line != "Points")
         return; //TODO File Corrupted
     points = QList<Point>();
@@ -94,10 +91,6 @@ MotorTrack::MotorTrack(QWidget *parent, float pixpersec, QFile *sourceFile, int 
 MotorTrack::MotorTrack(QWidget *parent, float pixpersec, QStringList * args, QList<Point> * points) : Track(parent, pixpersec)
 {
     port = args->at(1);
-    maxVal = args->at(2).toInt();
-    minVal = args->at(3).toInt();
-    midVal = args->at(4).toInt();
-    reverse = args->at(5) == "1";
     title = "";
     this->points = QList<Point>(*points); //Copy points over
     length = points->last().ms;
@@ -105,7 +98,7 @@ MotorTrack::MotorTrack(QWidget *parent, float pixpersec, QStringList * args, QLi
 }
 
 
-void MotorTrack::apply(QString name, int offset, QString port, int maxVal, int minVal, int defVal, bool reverse)
+void MotorTrack::apply(QString name, int offset, QString port)
 {
     bool showChange = false;
     bool trackChange = false;
@@ -121,22 +114,6 @@ void MotorTrack::apply(QString name, int offset, QString port, int maxVal, int m
     if(this->port != port)
         showChange = true;
     this->port = port;
-
-    if(this->maxVal != maxVal)
-        trackChange = true;
-    this->maxVal = maxVal;
-
-    if(this->minVal != minVal)
-        trackChange = true;
-    this->minVal = minVal;
-
-    if(this->midVal != defVal)
-        trackChange = true;
-    this->midVal = defVal;
-
-    if(this->reverse != reverse)
-        showChange = true;
-    this->reverse = reverse;
 
     update();
     if(showChange)
@@ -170,10 +147,17 @@ void MotorTrack::paintEvent(QPaintEvent *event)
     }
 }
 
+void MotorTrack::init()
+{
+    setLimits();
+
+    Track::init();
+}
+
 void MotorTrack::propertiesOpen()
 {
     qInfo() << "Opening Motor Properties";
-    MotorDialog *dialog = new MotorDialog(this, filename, title, offset, port, maxVal, minVal, midVal, reverse);
+    MotorDialog *dialog = new MotorDialog(this, filename, title, offset, port);
     dialog->show();
 }
 
@@ -182,9 +166,9 @@ void MotorTrack::saveTrack()
     sourceFile->open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream out(sourceFile);
     out << "Title," << title << "\n";
-    out << "MaxVal," << maxVal << "\n";
-    out << "MinVal," << minVal << "\n";
-    out << "MidVal," << midVal << "\n";
+    //out << "MaxVal," << maxVal << "\n";
+    //out << "MinVal," << minVal << "\n";
+    //out << "MidVal," << midVal << "\n";
     out << "Points\n";
     for(int i = 0; i < points.length(); i++) {
         Point p = points[i];
@@ -198,7 +182,18 @@ void MotorTrack::saveTrackAs()
 {
     QString newFilepath = QFileDialog::getSaveFileName(this, tr("Save Track"),"",tr("Animaniacs Motor Files (*.osr)"));
     if(newFilepath == "")
-        return;
+        newFilepath = "untitled.osr";
     this->setSourceFile(new QFile(newFilepath));
     saveTrack();
+}
+
+void MotorTrack::setLimits() {
+    PortConfig::SRVConfig * config = (PortConfig::SRVConfig *) PortConfig::getInstance()->getOutputConfig(port);
+
+    minVal = config->minVal;
+    midVal = config->midVal;
+    maxVal = config->maxVal;
+    reverse = config->reverse;
+
+    update();
 }

@@ -7,6 +7,8 @@ class ControllerAdapter;
 class SerialSettingsDialog;
 class RecordingConfigurationDialog;
 class QAction;
+class PortConfig;
+class PortConfigDialog;
 namespace Ui {
 class ShowEditorWindow;
 }
@@ -17,7 +19,7 @@ class ShowEditorWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit ShowEditorWindow(ControllerAdapter * adapter, QWidget *parent = nullptr);
+    explicit ShowEditorWindow(QWidget *parent = nullptr);
     ~ShowEditorWindow() override;
 
 private slots:
@@ -47,6 +49,10 @@ private slots:
 
     void configure_recording_triggered();
 
+    void port_config_triggered();
+
+    void port_test_triggerered();
+
 private:
     enum PlaybackState {STOPPED, PLAYING, PAUSED, RECORDING};
 
@@ -55,9 +61,9 @@ private:
     //Key References
     Ui::ShowEditorWindow *ui;
     ShowPrimaryPanel *panel;
-    ControllerAdapter * adapter;
     SerialSettingsDialog * settingsDialog;
     RecordingConfigurationDialog * recordingConfigurationDialog;
+    PortConfigDialog * portConfigDialog;
 
     //Internal Variables
     bool recordingConfigured = false;
@@ -73,10 +79,13 @@ private:
     QAction * stopAct;
     QAction * recordAct;
     QAction * configureRecordingAct;
+    QAction * portConfigAct;
+    QAction * portTestAct;
 
     //Key Functions
     void createSerialToolbar();
     void createPreviewingToolbar();
+    void createToolsToolbar();
 
     //Miscilaneous Functions
     void updatePlaybackState(PlaybackEvent playbackEvent);

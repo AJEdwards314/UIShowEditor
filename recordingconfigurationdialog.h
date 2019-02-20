@@ -24,10 +24,6 @@ public:
     struct Settings {
         RecordingType recordingType;
         QString motorPort;
-        int maxVal;
-        int minVal;
-        int midVal;
-        bool reverse;
         QString ledPort;
     };
 
