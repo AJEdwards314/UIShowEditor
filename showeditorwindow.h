@@ -51,7 +51,7 @@ private slots:
 
     void port_config_triggered();
 
-    void port_test_triggerered();
+    void port_test_triggered();
 
 private:
     enum PlaybackState {STOPPED, PLAYING, PAUSED, RECORDING};

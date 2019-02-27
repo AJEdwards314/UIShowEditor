@@ -7,8 +7,10 @@
 #include<QFileDialog>
 #include<QTextStream>
 #include<QMessageBox>
-#include <controlleradapter.h>
-#include <serialsettingsdialog.h>
+
+class SerialSettingsDialog;
+class PortConfigDialog;
+
 namespace Ui{
 class BehaviorProgramming;
 }
@@ -33,6 +35,10 @@ private slots:
 
     void on_actionConnect_triggered();
 
+    void port_config_triggered();
+
+    void port_test_triggered();
+
 
     void on_actionDisconnect_triggered();
 
@@ -44,10 +50,19 @@ private:
     Ui::BehaviorProgramming *ui;
     QString currentFile = "";
     SerialSettingsDialog * settingsDialog;
+    PortConfigDialog * portConfigDialog;
     bool serialOpen = false;
 
     void createSerialToolbar();
+    void createToolsToolbar();
     void serialDisconnected(); //To be called if serial is disconnected for any reason
+
+    void updatePortList();
+
+    QAction * portConfigAct;
+    QAction * portTestAct;
+
+    QString inputType = "IN";
 };
 
     #endif // BEHAVIORPROGRAMMIN_H
