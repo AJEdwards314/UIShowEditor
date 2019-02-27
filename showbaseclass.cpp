@@ -12,6 +12,10 @@
 
 ShowBaseClass::ShowBaseClass(QObject *parent, QString filepath) : QObject(parent)
 {
+    trackFileNames = new QStringList();
+    trackOffsets = new QList<int>();
+    trackPorts = new QList<QString>();
+    fullArgs = new QList<QList<QString>>();
     parentPanel = (ShowPrimaryPanel*) parent;
     setSourceFile(new QFile(filepath));
     QFileInfo fileinfo(filepath);
@@ -37,24 +41,22 @@ ShowBaseClass::ShowBaseClass(QObject *parent, QString filepath) : QObject(parent
             qInfo("Tracks Not Found");
             return; //TODO File Corrupted
         }
-        QStringList trackFiles;
-        QList<int> trackOffsets;
-        QList<QString> trackPorts;
-        QList<QList<QString>> fullArgs;
+
         while((line = in.readLine()) != "EndTracks") {
             list = line.split(QRegularExpression(","));
-            trackFiles.append(fileinfo.absolutePath() + "/" + list[0]);
+            trackFileNames->append(fileinfo.absolutePath() + "/" + list[0]);
             qInfo() << fileinfo.absolutePath();
-            trackOffsets.append(list[1].toInt());
-            trackPorts.append(list[2]);
+            trackOffsets->append(list[1].toInt());
+            trackPorts->append(list[2]);
             QList<QString> args;
             for(int i = 3; i < list.length(); i++) {
                 args.append(list[i]);
             }
-            fullArgs.append(args);
+            fullArgs->append(args);
         }
         sourceFile->close();
-        parentPanel->openTracks(trackFiles, &trackOffsets, &trackPorts, &fullArgs);
+        if(parentPanel != nullptr)
+            parentPanel->openTracks(*trackFileNames, trackOffsets, trackPorts, fullArgs);
     } else {
         filename = "";
         title = "Untitled";

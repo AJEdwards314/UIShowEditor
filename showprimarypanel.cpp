@@ -22,6 +22,7 @@
 #include "controlleradapter.h"
 #include "point.h"
 #include "portconfig.h"
+#include "workingdirectory.h"
 
 
 ShowPrimaryPanel::ShowPrimaryPanel(QWidget *parent) : QWidget(parent)
@@ -190,7 +191,7 @@ bool ShowPrimaryPanel::saveAs()
         createEmptyShow();
     }
 
-    QString filepath = QFileDialog::getSaveFileName(this, tr("Save Show"),"",tr("Animaniacs Show Files (*.shw)"));
+    QString filepath = QFileDialog::getSaveFileName(this, tr("Save Show"),WorkingDirectory::getPath(),tr("Animaniacs Show Files (*.shw)"));
     if(filepath == "")
         return false;
     QFile * newSourceFile = new QFile(filepath);
@@ -233,10 +234,14 @@ bool ShowPrimaryPanel::transferShow()
     if(showSavedRv == showTransferedRv)
         return true;
 
+    ControllerAdapter::getInstance()->transferShow(showBase->getFile());
+
+    /*
     for(int i = 0; i < tracks->length(); i++)
         ControllerAdapter::getInstance()->sendTrack(tracks->at(i)->getFile());
     ControllerAdapter::getInstance()->sendShow(showBase->getFile());
     ControllerAdapter::getInstance()->sendPortConfig(PortConfig::getInstance()->getSourceFile());
+    */
 
     showTransferedRv = showSavedRv;
     return true;

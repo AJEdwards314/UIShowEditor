@@ -4,10 +4,13 @@
 #include <QFileInfo>
 #include <QSemaphore>
 #include <QDebug>
+#include <QRegularExpression>
 #include "point.h"
 #include "showprimarypanel.h"
 #include "serialrxdaemon.h"
 #include "portreaddaemon.h"
+#include "showbaseclass.h"
+#include "portconfig.h"
 
 ControllerAdapter * ControllerAdapter::instance;
 
@@ -57,6 +60,35 @@ int ControllerAdapter::startSerialConnection(QString port, QSerialPort::BaudRate
 void ControllerAdapter::stopSerialConnection()
 {
     serialPort->close();
+}
+
+int ControllerAdapter::transferBehavior(QFile *behaviorFile) {
+    int result = 0;
+    if(!behaviorFile->open(QIODevice::ReadOnly | QIODevice::Text))
+        return 1;
+    QTextStream in(behaviorFile);
+    QString line;
+    while((line = in.readLine()) != "Triggers") {}
+    while((line = in.readLine()) != "End Triggers") {
+        QStringList list = line.split(QRegularExpression(","));
+        if(list.length() >= 4)
+            result |= transferShow(new QFile(list[3]));
+    }
+    behaviorFile->close();
+    result |= sendBehavior(behaviorFile);
+    return result;
+}
+
+int ControllerAdapter::transferShow(QFile *showFile) {
+    int result = 0;
+    result |= sendPortConfig(PortConfig::getInstance()->getSourceFile());
+    ShowBaseClass showBase(nullptr, showFile->fileName());
+    QStringList * trackFileNames = showBase.getTrackFileNames();
+    for(int i = 0; i < trackFileNames->length(); i++) {
+        result |= sendTrack(new QFile(trackFileNames->at(i)));
+    }
+    result |= sendShow(showFile);
+    return result;
 }
 
 int ControllerAdapter::sendTrack(QFile *trackFile)

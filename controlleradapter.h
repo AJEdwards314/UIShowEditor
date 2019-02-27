@@ -28,6 +28,8 @@ public:
     int startSerialConnection(QString port, QSerialPort::BaudRate baud);
     void stopSerialConnection();
 
+    int transferShow(QFile *showFile);
+    int transferBehavior(QFile *behaviorFile);
     int sendTrack(QFile *trackFile);
     int sendShow(QFile *showFile);
     int sendBehavior(QFile *behaviorFile);
