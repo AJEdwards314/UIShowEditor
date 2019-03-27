@@ -118,9 +118,11 @@ QStringList PortConfig::getPorts(QString type) {
     if(type == "OUT") {
         types.append("SRV");
         types.append("DOUT");
+        types.append("AUD");
     } else if (type == "IN") {
         types.append("AIN");
         types.append("DIN");
+        types.append("VOIC");
     } else {
         types.append(type);
     }
@@ -140,6 +142,12 @@ QStringList PortConfig::getPorts(QStringList types) {
         if(types.contains(inConfigs[i]->type)) {
             outList.append(inConfigs[i]->type + QString::number(inConfigs[i]->portNum));
         }
+    }
+    if(types.contains("AUD")) {
+        outList.append("AUD1");
+    }
+    if(types.contains("VOIC")) {
+        outList.append("VOIC1");
     }
     return outList;
 }
