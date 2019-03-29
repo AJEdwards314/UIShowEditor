@@ -103,12 +103,20 @@ void ShowPrimaryPanel::openTracks(QStringList &filenames, QList<int> * offsets, 
                     port = "DOUT1";
                 else
                     port = portList[0];
-            } else {
+            } else if(fileinfo.suffix() == "osr") {
                 QStringList portList = PortConfig::getInstance()->getPorts("SRV");
                 if(portList.length() == 0)
                     port = "SRV1";
                 else
                     port = portList[0];
+            } else if(fileinfo.suffix() == "wav") {
+                QStringList portList = PortConfig::getInstance()->getPorts("AUD");
+                if(portList.length() == 0)
+                    port = "AUD1";
+                else
+                    port = portList[0];
+            } else {
+                port = "SRV1";
             }
         }
 

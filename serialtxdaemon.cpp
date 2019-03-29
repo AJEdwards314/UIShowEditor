@@ -10,7 +10,7 @@
 #include "controlleradapter.h"
 #include "serialrxdaemon.h"
 
-int SerialTxDaemon::current_id;
+int SerialTxDaemon::currentId;
 
 const SerialTxDaemon::HeaderMapping SerialTxDaemon::mapping[ERROR]  = {
     {INCOMING_TRACK, "AD"},
@@ -60,7 +60,7 @@ void SerialTxDaemon::run()
     //qInfo() << "Thread " << QString::number(myId) << ": Running";
     bool hasDataPayload = signalType == INCOMING_TRACK || signalType == INCOMING_SHOW || signalType == INCOMING_BEHAVIOR || signalType == INCOMING_PORT_CONFIG;
     serialPortSem->acquire();
-    while(myId != current_id) {
+    while(myId != currentId) {
         serialPortSem->release();
         QThread::yieldCurrentThread();
         serialPortSem->acquire();
@@ -68,8 +68,12 @@ void SerialTxDaemon::run()
     qInfo() << "Thread " << QString::number(myId) << ": Running";
     serialPort->clear(QSerialPort::Output);
     //qInfo() << "Current Time: " << QString::number(QDateTime::currentMSecsSinceEpoch()) << ", My Time: " + QString::number(myTime);
-    if(QDateTime::currentMSecsSinceEpoch() > myTime + MID_TIME_OUT) {
+    /*if(QDateTime::currentMSecsSinceEpoch() > myTime + MID_TIME_OUT) {
         qInfo() << "Thread " << QString::number(myId) << ": Expired";
+        currentId++;
+        */
+
+    if(false) {
     } else if(signalType == STOP_RECORDING) {
         runStopRecording();
     } else if(signalType == READ_PORT || signalType == DRIVE_PORT) {
@@ -107,7 +111,7 @@ void SerialTxDaemon::run()
     serialPort->clear(QSerialPort::Input);
     qInfo() << "Finishing Message";
 
-    current_id++;
+    currentId++;
     serialPortSem->release();
     qInfo() << "End Run Thread";
 }

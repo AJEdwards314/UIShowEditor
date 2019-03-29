@@ -21,6 +21,7 @@ ControllerAdapter::ControllerAdapter(QObject *parent) : QObject(parent)
     rxDaemon = new SerialRxDaemon(serialPort);
     connect(serialPort, &QIODevice::readyRead, rxDaemon, &SerialRxDaemon::readLine);
     connect(serialPort, &QSerialPort::errorOccurred, this, &ControllerAdapter::serialError);
+    connect(rxDaemon, &SerialRxDaemon::rxString, this, &ControllerAdapter::respRxed);
 }
 
 ControllerAdapter * ControllerAdapter::getInstance()
@@ -280,7 +281,7 @@ void ControllerAdapter::respRxed(SerialTxDaemon::SignalType type, QString payloa
     if(type != SerialTxDaemon::SHOW_FINISHED) {
         return;
     }
-    emit stopShow();
+    emit stopPlayback();
 }
 
 void ControllerAdapter::serialError(QSerialPort::SerialPortError error) {

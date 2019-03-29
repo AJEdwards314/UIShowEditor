@@ -82,10 +82,10 @@ LEDTrack::LEDTrack(QWidget *parent, float pixpersec, QFile *sourceFile, int offs
     init();
 }
 
-LEDTrack::LEDTrack(QWidget *parent, float pixpersec, QStringList * args, QList<Point> * points)
+LEDTrack::LEDTrack(QWidget *parent, float pixpersec, QStringList * args, QList<Point> * points) : Track (parent, pixpersec)
 {
     port = args->at(1);
-    title = "";
+    title = "untitled";
     this->points = QList<Point>(*points);
     length = points->last().ms;
     init();
