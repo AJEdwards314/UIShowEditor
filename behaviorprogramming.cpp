@@ -349,3 +349,13 @@ void BehaviorProgramming::updatePortList() {
     ui->inPortMenu->addItems(PortConfig::getInstance()->getPorts(inputType));
 }
 
+
+void BehaviorProgramming::on_removeTriggerButton_clicked()
+{
+    QListWidgetItem *item = ui->triggerList->currentItem();
+    if(item != nullptr)
+    {
+         ui->triggerList->takeItem(ui->triggerList->row(item));
+    }
+
+}
