@@ -148,8 +148,8 @@
     <property name="geometry">
      <rect>
       <x>580</x>
-      <y>420</y>
-      <width>75</width>
+      <y>390</y>
+      <width>91</width>
       <height>23</height>
      </rect>
     </property>
@@ -186,7 +186,7 @@
    <widget class="QLabel" name="showLabel">
     <property name="geometry">
      <rect>
-      <x>610</x>
+      <x>560</x>
       <y>40</y>
       <width>61</width>
       <height>16</height>
@@ -446,6 +446,19 @@
      </item>
     </widget>
    </widget>
+   <widget class="QPushButton" name="removeTriggerButton">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>430</y>
+      <width>91</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Remove Trigger</string>
+    </property>
+   </widget>
    <zorder>textFrame</zorder>
    <zorder>analogFrame</zorder>
    <zorder>inTypeMenu</zorder>
@@ -459,6 +472,7 @@
    <zorder>triggerNameEdit</zorder>
    <zorder>triggerList</zorder>
    <zorder>digitalFrame</zorder>
+   <zorder>removeTriggerButton</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

@@ -1,0 +1,6 @@
+Title,Ha.bmo
+Triggers
+Sleep,Analog,ana2,<,64,Nap Time
+Greet,Text,text,Hello,Good Show
+Something,Digital,dig1,< X <,32,76,Money
+End Triggers
