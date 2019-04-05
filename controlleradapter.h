@@ -65,7 +65,7 @@ protected:
     QString getLengthString(int length, int padLength = 10);
 
 
-    int sendFile(SerialTxDaemon::SignalType signalType, QFile *file);
+    int sendFile(SerialTxDaemon::SignalType signalType, QFile *file, QString filename = "");
 
     int getnextId();
 
