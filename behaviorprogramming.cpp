@@ -191,7 +191,8 @@ void BehaviorProgramming::on_inTypeMenu_activated(const QString &arg1)
         ui->textFrame->setHidden(false);
         ui->digitalFrame->setHidden(true);
         ui->digitalFrame->setDisabled(true);
-        inputType = "VOIC";
+        inputType = "MIC";
+
     }
     updatePortList();
 }

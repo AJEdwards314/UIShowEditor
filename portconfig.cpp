@@ -122,7 +122,8 @@ QStringList PortConfig::getPorts(QString type) {
     } else if (type == "IN") {
         types.append("AIN");
         types.append("DIN");
-        types.append("VOIC");
+        types.append("MIC");
+
     } else {
         types.append(type);
     }
@@ -146,8 +147,9 @@ QStringList PortConfig::getPorts(QStringList types) {
     if(types.contains("AUD")) {
         outList.append("AUD1");
     }
-    if(types.contains("VOIC")) {
-        outList.append("VOIC1");
+
+    if(types.contains("MIC")) {
+        outList.append("MIC1");
     }
     return outList;
 }
