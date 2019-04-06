@@ -104,7 +104,7 @@ int ControllerAdapter::sendShow(QFile *showFile)
 
 int ControllerAdapter::sendBehavior(QFile *behaviorFile)
 {
-    return sendFile(SerialTxDaemon::INCOMING_BEHAVIOR, behaviorFile);
+    return sendFile(SerialTxDaemon::INCOMING_BEHAVIOR, behaviorFile, "MainBehavior.bmo");
 }
 
 int ControllerAdapter::sendPortConfig(QFile * portConfigFile)
@@ -257,9 +257,10 @@ QString ControllerAdapter::getLengthString(int length, int padLength)
     return QString("%1").arg(length, padLength, 10, QChar('0'));
 }
 
-int ControllerAdapter::sendFile(SerialTxDaemon::SignalType signalType, QFile *file)
+int ControllerAdapter::sendFile(SerialTxDaemon::SignalType signalType, QFile *file, QString filename)
 {
-    QString filename = getFilename(file);
+    if(filename == "")
+        filename = getFilename(file);
     QByteArray * filedata = readFile(file);
     if(filename == "" || filedata->length() == 0)
         return 1;
