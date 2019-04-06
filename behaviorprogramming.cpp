@@ -192,6 +192,7 @@ void BehaviorProgramming::on_inTypeMenu_activated(const QString &arg1)
         ui->digitalFrame->setHidden(true);
         ui->digitalFrame->setDisabled(true);
         inputType = "MIC";
+
     }
     updatePortList();
 }

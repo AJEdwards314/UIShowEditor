@@ -123,6 +123,7 @@ QStringList PortConfig::getPorts(QString type) {
         types.append("AIN");
         types.append("DIN");
         types.append("MIC");
+
     } else {
         types.append(type);
     }
@@ -146,6 +147,7 @@ QStringList PortConfig::getPorts(QStringList types) {
     if(types.contains("AUD")) {
         outList.append("AUD1");
     }
+
     if(types.contains("MIC")) {
         outList.append("MIC1");
     }
