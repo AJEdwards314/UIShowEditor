@@ -46,6 +46,8 @@ private slots:
 
     void on_actionUpload_triggered();
 
+    void on_removeTriggerButton_clicked();
+
 private:
     Ui::BehaviorProgramming *ui;
     QString currentFile = "";
