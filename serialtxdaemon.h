@@ -14,7 +14,7 @@ class SerialTxDaemon : public QThread
 {
     Q_OBJECT
 public:
-    static int current_id;
+    static int currentId;
 
     enum SignalType {
         INCOMING_TRACK,

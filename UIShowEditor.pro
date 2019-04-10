@@ -47,7 +47,8 @@ SOURCES += \
     porttestdialog.cpp \
     portreaddaemon.cpp \
     serialtxdaemon.cpp \
-    serialrxdaemon.cpp
+    serialrxdaemon.cpp \
+    workingdirectory.cpp
 
 HEADERS += \
         showeditorwindow.h \
@@ -74,7 +75,8 @@ HEADERS += \
     porttestdialog.h \
     portreaddaemon.h \
     serialtxdaemon.h \
-    serialrxdaemon.h
+    serialrxdaemon.h \
+    workingdirectory.h
 
 
 FORMS += \

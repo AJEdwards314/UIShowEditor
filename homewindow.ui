@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>917</width>
+    <height>586</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -40,13 +40,14 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>120</y>
-      <width>101</width>
-      <height>41</height>
+      <y>220</y>
+      <width>241</width>
+      <height>111</height>
      </rect>
     </property>
     <property name="font">
      <font>
+      <pointsize>22</pointsize>
       <weight>50</weight>
       <bold>false</bold>
      </font>
@@ -71,14 +72,15 @@
    <widget class="QPushButton" name="behaviorButton">
     <property name="geometry">
      <rect>
-      <x>280</x>
-      <y>120</y>
-      <width>101</width>
-      <height>41</height>
+      <x>660</x>
+      <y>220</y>
+      <width>241</width>
+      <height>111</height>
      </rect>
     </property>
     <property name="font">
      <font>
+      <pointsize>22</pointsize>
       <weight>50</weight>
       <bold>false</bold>
      </font>
@@ -104,10 +106,10 @@ Programming</string>
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>130</x>
-      <y>90</y>
-      <width>121</width>
-      <height>101</height>
+      <x>290</x>
+      <y>160</y>
+      <width>321</width>
+      <height>231</height>
      </rect>
     </property>
     <property name="text">
@@ -123,14 +125,21 @@ Programming</string>
    <widget class="QLabel" name="ProductName">
     <property name="geometry">
      <rect>
-      <x>160</x>
-      <y>50</y>
-      <width>61</width>
-      <height>20</height>
+      <x>190</x>
+      <y>70</y>
+      <width>551</width>
+      <height>61</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>24</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
     <property name="text">
-     <string>Animani Axe</string>
+     <string>Animaniacs Animation Assembler</string>
     </property>
    </widget>
   </widget>
@@ -139,7 +148,7 @@ Programming</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>400</width>
+     <width>917</width>
      <height>21</height>
     </rect>
    </property>

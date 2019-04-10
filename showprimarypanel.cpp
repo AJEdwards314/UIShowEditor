@@ -22,6 +22,7 @@
 #include "controlleradapter.h"
 #include "point.h"
 #include "portconfig.h"
+#include "workingdirectory.h"
 
 
 ShowPrimaryPanel::ShowPrimaryPanel(QWidget *parent) : QWidget(parent)
@@ -102,12 +103,20 @@ void ShowPrimaryPanel::openTracks(QStringList &filenames, QList<int> * offsets, 
                     port = "DOUT1";
                 else
                     port = portList[0];
-            } else {
+            } else if(fileinfo.suffix() == "osr") {
                 QStringList portList = PortConfig::getInstance()->getPorts("SRV");
                 if(portList.length() == 0)
                     port = "SRV1";
                 else
                     port = portList[0];
+            } else if(fileinfo.suffix() == "wav") {
+                QStringList portList = PortConfig::getInstance()->getPorts("AUD");
+                if(portList.length() == 0)
+                    port = "AUD1";
+                else
+                    port = portList[0];
+            } else {
+                port = "SRV1";
             }
         }
 
@@ -190,7 +199,7 @@ bool ShowPrimaryPanel::saveAs()
         createEmptyShow();
     }
 
-    QString filepath = QFileDialog::getSaveFileName(this, tr("Save Show"),"",tr("Animaniacs Show Files (*.shw)"));
+    QString filepath = QFileDialog::getSaveFileName(this, tr("Save Show"),WorkingDirectory::getPath(),tr("Animaniacs Show Files (*.shw)"));
     if(filepath == "")
         return false;
     QFile * newSourceFile = new QFile(filepath);
@@ -233,10 +242,14 @@ bool ShowPrimaryPanel::transferShow()
     if(showSavedRv == showTransferedRv)
         return true;
 
+    ControllerAdapter::getInstance()->transferShow(showBase->getFile());
+
+    /*
     for(int i = 0; i < tracks->length(); i++)
         ControllerAdapter::getInstance()->sendTrack(tracks->at(i)->getFile());
     ControllerAdapter::getInstance()->sendShow(showBase->getFile());
     ControllerAdapter::getInstance()->sendPortConfig(PortConfig::getInstance()->getSourceFile());
+    */
 
     showTransferedRv = showSavedRv;
     return true;

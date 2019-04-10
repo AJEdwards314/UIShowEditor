@@ -91,7 +91,7 @@ MotorTrack::MotorTrack(QWidget *parent, float pixpersec, QFile *sourceFile, int 
 MotorTrack::MotorTrack(QWidget *parent, float pixpersec, QStringList * args, QList<Point> * points) : Track(parent, pixpersec)
 {
     port = args->at(1);
-    title = "";
+    title = "untitled";
     this->points = QList<Point>(*points); //Copy points over
     length = points->last().ms;
     init();

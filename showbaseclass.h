@@ -18,6 +18,10 @@ public:
     //Accessors
     inline QString getFilename() {return filename;}
     inline QFile * getFile() {return sourceFile;}
+    inline QStringList * getTrackFileNames() {return trackFileNames;}
+    inline QList<int> * getTrackOffsets() {return trackOffsets;}
+    inline QList<QString> * getTrackPorts() {return trackPorts;}
+    inline QList<QList<QString>> * getFullArgs() {return fullArgs;}
 protected:
     //Key References
     ShowPrimaryPanel * parentPanel;
@@ -26,6 +30,10 @@ protected:
     //Attributes
     QString title;
     QString filename;
+    QStringList * trackFileNames;
+    QList<int> * trackOffsets;
+    QList<QString> * trackPorts;
+    QList<QList<QString>> * fullArgs;
 
     //Functions
     void setSourceFile(QFile *sourceFile);

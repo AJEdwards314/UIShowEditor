@@ -15,7 +15,7 @@ public:
     static int getPortNum(QString port);
 
     struct OutConfigBase {
-        QString type = "DOUT"; //SRV or DOUT
+        QString type = "DOUT"; //SRV or DOUT or AUD
         int portNum = 1;
     };
 

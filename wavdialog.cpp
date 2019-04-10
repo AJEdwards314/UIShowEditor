@@ -1,6 +1,7 @@
 #include "wavdialog.h"
 #include "ui_wavdialog.h"
 #include "wavtrack.h"
+#include "portconfig.h"
 
 #include <QAbstractButton>
 #include <QDebug>
@@ -13,7 +14,8 @@ WAVDialog::WAVDialog(QWidget *parent, QString filename, int offset, QString port
     ui->setupUi(this);
     ui->filenameLbl->setText(filename);
     ui->offsetBox->setText(QString::number(offset));
-    ui->portBox->setText(port);
+    ui->portCB->addItems(PortConfig::getInstance()->getPorts("AUD"));
+    ui->portCB->setCurrentText(port);
 
 }
 
@@ -35,5 +37,5 @@ void WAVDialog::on_buttonBox_clicked(QAbstractButton *button)
 
 void WAVDialog::applyToParent()
 {
-    parentTrack->apply(ui->offsetBox->text().toInt(), ui->portBox->text());
+    parentTrack->apply(ui->offsetBox->text().toInt(), ui->portCB->currentText());
 }

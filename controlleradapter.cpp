@@ -4,10 +4,13 @@
 #include <QFileInfo>
 #include <QSemaphore>
 #include <QDebug>
+#include <QRegularExpression>
 #include "point.h"
 #include "showprimarypanel.h"
 #include "serialrxdaemon.h"
 #include "portreaddaemon.h"
+#include "showbaseclass.h"
+#include "portconfig.h"
 
 ControllerAdapter * ControllerAdapter::instance;
 
@@ -18,6 +21,7 @@ ControllerAdapter::ControllerAdapter(QObject *parent) : QObject(parent)
     rxDaemon = new SerialRxDaemon(serialPort);
     connect(serialPort, &QIODevice::readyRead, rxDaemon, &SerialRxDaemon::readLine);
     connect(serialPort, &QSerialPort::errorOccurred, this, &ControllerAdapter::serialError);
+    connect(rxDaemon, &SerialRxDaemon::rxString, this, &ControllerAdapter::respRxed);
 }
 
 ControllerAdapter * ControllerAdapter::getInstance()
@@ -59,6 +63,35 @@ void ControllerAdapter::stopSerialConnection()
     serialPort->close();
 }
 
+int ControllerAdapter::transferBehavior(QFile *behaviorFile) {
+    int result = 0;
+    if(!behaviorFile->open(QIODevice::ReadOnly | QIODevice::Text))
+        return 1;
+    QTextStream in(behaviorFile);
+    QString line;
+    while((line = in.readLine()) != "Triggers") {}
+    while((line = in.readLine()) != "End Triggers") {
+        QStringList list = line.split(QRegularExpression(","));
+        if(list.length() >= 4)
+            result |= transferShow(new QFile(list[3]));
+    }
+    behaviorFile->close();
+    result |= sendBehavior(behaviorFile);
+    return result;
+}
+
+int ControllerAdapter::transferShow(QFile *showFile) {
+    int result = 0;
+    result |= sendPortConfig(PortConfig::getInstance()->getSourceFile());
+    ShowBaseClass showBase(nullptr, showFile->fileName());
+    QStringList * trackFileNames = showBase.getTrackFileNames();
+    for(int i = 0; i < trackFileNames->length(); i++) {
+        result |= sendTrack(new QFile(trackFileNames->at(i)));
+    }
+    result |= sendShow(showFile);
+    return result;
+}
+
 int ControllerAdapter::sendTrack(QFile *trackFile)
 {
     return sendFile(SerialTxDaemon::INCOMING_TRACK, trackFile);
@@ -71,7 +104,7 @@ int ControllerAdapter::sendShow(QFile *showFile)
 
 int ControllerAdapter::sendBehavior(QFile *behaviorFile)
 {
-    return sendFile(SerialTxDaemon::INCOMING_BEHAVIOR, behaviorFile);
+    return sendFile(SerialTxDaemon::INCOMING_BEHAVIOR, behaviorFile, "MainBehavior.bmo");
 }
 
 int ControllerAdapter::sendPortConfig(QFile * portConfigFile)
@@ -224,9 +257,10 @@ QString ControllerAdapter::getLengthString(int length, int padLength)
     return QString("%1").arg(length, padLength, 10, QChar('0'));
 }
 
-int ControllerAdapter::sendFile(SerialTxDaemon::SignalType signalType, QFile *file)
+int ControllerAdapter::sendFile(SerialTxDaemon::SignalType signalType, QFile *file, QString filename)
 {
-    QString filename = getFilename(file);
+    if(filename == "")
+        filename = getFilename(file);
     QByteArray * filedata = readFile(file);
     if(filename == "" || filedata->length() == 0)
         return 1;
@@ -248,7 +282,7 @@ void ControllerAdapter::respRxed(SerialTxDaemon::SignalType type, QString payloa
     if(type != SerialTxDaemon::SHOW_FINISHED) {
         return;
     }
-    emit stopShow();
+    emit stopPlayback();
 }
 
 void ControllerAdapter::serialError(QSerialPort::SerialPortError error) {

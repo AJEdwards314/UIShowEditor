@@ -5,6 +5,7 @@
 #include "controlleradapter.h"
 #include "portconfigdialog.h"
 #include "portconfig.h"
+#include "workingdirectory.h"
 #include <QDebug>
 
 
@@ -40,5 +41,6 @@ void HomeWindow::showEvent(QShowEvent * event) {
     message.exec();
     QString dirString = QFileDialog::getExistingDirectory();
     qInfo() << dirString + "/PortConfig.pcg";
+    WorkingDirectory::setDir(dirString);
     PortConfig::setInstance(dirString + "/PortConfig.pcg");
 }

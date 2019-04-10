@@ -1,0 +1,6 @@
+Title,Testing.bmo
+Triggers
+TheGreat,Analog,AIN1,alex.shw,<,-395
+Grats,Digital,DIN4,congratulations.shw,Lo
+Hi,Text,Text,Greet.shw,Hello
+End Triggers

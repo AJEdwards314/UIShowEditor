@@ -28,6 +28,8 @@ public:
     int startSerialConnection(QString port, QSerialPort::BaudRate baud);
     void stopSerialConnection();
 
+    int transferShow(QFile *showFile);
+    int transferBehavior(QFile *behaviorFile);
     int sendTrack(QFile *trackFile);
     int sendShow(QFile *showFile);
     int sendBehavior(QFile *behaviorFile);
@@ -63,7 +65,7 @@ protected:
     QString getLengthString(int length, int padLength = 10);
 
 
-    int sendFile(SerialTxDaemon::SignalType signalType, QFile *file);
+    int sendFile(SerialTxDaemon::SignalType signalType, QFile *file, QString filename = "");
 
     int getnextId();
 

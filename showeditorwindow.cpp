@@ -12,6 +12,7 @@
 #include "portconfigdialog.h"
 #include "portconfig.h"
 #include "porttestdialog.h"
+#include "workingdirectory.h"
 
 ShowEditorWindow::ShowEditorWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -60,7 +61,7 @@ void ShowEditorWindow::on_actionNew_triggered()
 
 void ShowEditorWindow::on_actionOpen_Track_triggered()
 {
-    QStringList filenames = QFileDialog::getOpenFileNames(this, tr("Open Track File"),"",tr("Animaniacs Track Files (*.wav; *.osr; *.lsr)"));
+    QStringList filenames = QFileDialog::getOpenFileNames(this, tr("Open Track File"),WorkingDirectory::getPath(),tr("Animaniacs Track Files (*.wav; *.osr; *.lsr)"));
     if(filenames.length() == 0)
         return;
     panel->openTracks(filenames);
@@ -73,7 +74,7 @@ void ShowEditorWindow::on_actionOpen_Track_triggered()
 
 void ShowEditorWindow::on_actionOpen_triggered()
 {
-    QString filepath = QFileDialog::getOpenFileName(this, tr("Open Show"),"",tr("Animaniacs Show Files (*.shw)"));
+    QString filepath = QFileDialog::getOpenFileName(this, tr("Open Show"),WorkingDirectory::getPath(),tr("Animaniacs Show Files (*.shw)"));
     if(filepath == "")
         return;
     panel->openShow(filepath);
@@ -180,7 +181,7 @@ void ShowEditorWindow::port_config_triggered()
     portConfigDialog->exec();
 }
 
-void ShowEditorWindow::port_test_triggerered()
+void ShowEditorWindow::port_test_triggered()
 {
     ControllerAdapter::getInstance()->sendPortConfig(PortConfig::getInstance()->getSourceFile());
     PortTestDialog * dialog = new PortTestDialog();
@@ -280,7 +281,7 @@ void ShowEditorWindow::createToolsToolbar() {
     const QIcon portTestIcon = QIcon(":/images/PortTest.png");
     portTestAct = new QAction(portTestIcon, tr("Test Port Configuration"));
     portTestAct->setStatusTip(tr("Test Input and Output Ports"));
-    connect(portTestAct, &QAction::triggered, this, &ShowEditorWindow::port_test_triggerered);
+    connect(portTestAct, &QAction::triggered, this, &ShowEditorWindow::port_test_triggered);
     toolsMenu->addAction(portTestAct);
     toolsToolbar->addAction(portTestAct);
 

@@ -4,6 +4,8 @@
 #include <QToolBar>
 #include "controlleradapter.h"
 #include "serialsettingsdialog.h"
+#include "workingdirectory.h"
+#include "portconfigdialog.h"
 BehaviorProgramming::BehaviorProgramming(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::BehaviorProgramming)
@@ -28,8 +30,25 @@ BehaviorProgramming::BehaviorProgramming(QWidget *parent) :
     ui->actionConnect->setEnabled(false);
     ui->actionDisconnect->setEnabled(false);
 
+    createToolsToolbar();
+    portConfigAct->setEnabled(true);
+    portTestAct->setEnabled(false);
+    portConfigDialog = new PortConfigDialog(PortConfig::getInstance());
 
-    QDir directory(":/Shows");
+
+
+    QDir directory = WorkingDirectory::getDir();
+    directory.setFilter(QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks);
+    QFileInfoList list = directory.entryInfoList();
+    for (int i = 0; i < list.size(); ++i) {
+        QFileInfo fileInfo = list.at(i);
+        if(fileInfo.suffix() == "shw")
+            ui->showNameMenu->addItem(fileInfo.fileName());
+    }
+
+    inputType = "AIN";
+    updatePortList();
+    //QDir directory(":/Shows");
 
 }
 BehaviorProgramming::~BehaviorProgramming()
@@ -67,7 +86,7 @@ void BehaviorProgramming::on_actionNew_triggered()
 
 void BehaviorProgramming::on_actionSave_triggered()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, "Save as") + ".bmo";
+    QString fileName = QFileDialog::getSaveFileName(this, "Save as", WorkingDirectory::getPath(), tr("Animaniacs Behavior Model (*.bmo)"));
     QFile file(fileName);
     if(!file.open(QIODevice::WriteOnly | QFile::Text))
     {
@@ -90,21 +109,21 @@ void BehaviorProgramming::on_actionSave_triggered()
 
     file.close();
 
-    QDir directory = fileInfo.absoluteDir();
+    /*QDir directory = fileInfo.absoluteDir();
     directory.setFilter(QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks);
     QFileInfoList list = directory.entryInfoList();
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
         if(fileInfo.suffix() == "shw")
             ui->showNameMenu->addItem(fileInfo.fileName());
-    }
+    }*/
 
 
 }
 
 void BehaviorProgramming::on_actionOpen_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, "Open the file", "", "*.bmo");
+    QString fileName = QFileDialog::getOpenFileName(this, "Open the file", WorkingDirectory::getPath(), tr("Animaniacs Behavior Model (*.bmo)"));
     QFile file(fileName);
     QFileInfo fileInfo(file.fileName());
     fileName = fileInfo.fileName();
@@ -139,14 +158,14 @@ void BehaviorProgramming::on_actionOpen_triggered()
     }
     file.close();
 
-    QDir directory = fileInfo.absoluteDir();
+    /*QDir directory = fileInfo.absoluteDir();
     directory.setFilter(QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks);
     QFileInfoList list = directory.entryInfoList();
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
         if(fileInfo.suffix() == "shw")
             ui->showNameMenu->addItem(fileInfo.fileName());
-    }
+    }*/
 
 }
 
@@ -160,6 +179,7 @@ void BehaviorProgramming::on_inTypeMenu_activated(const QString &arg1)
         ui->analogFrame->setHidden(false);
         ui->digitalFrame->setHidden(true);
         ui->digitalFrame->setDisabled(true);
+        inputType = "AIN";
     }
     else if(arg1 == "Digital")
     {
@@ -169,6 +189,7 @@ void BehaviorProgramming::on_inTypeMenu_activated(const QString &arg1)
         ui->digitalFrame->setHidden(false);
         ui->analogFrame->setHidden(true);
         ui->analogFrame->setDisabled(true);
+        inputType = "DIN";
     }
     else
     {
@@ -178,7 +199,10 @@ void BehaviorProgramming::on_inTypeMenu_activated(const QString &arg1)
         ui->textFrame->setHidden(false);
         ui->digitalFrame->setHidden(true);
         ui->digitalFrame->setDisabled(true);
+        inputType = "MIC";
+
     }
+    updatePortList();
 }
 
 void BehaviorProgramming::on_logicCombo_activated(const QString &arg1)
@@ -346,6 +370,7 @@ void BehaviorProgramming::on_actionConnect_triggered()
     serialOpen = true;
     ui->actionConnect->setEnabled(false);
     ui->actionDisconnect->setEnabled(true);
+    portTestAct->setEnabled(true);
 }
 
 
@@ -365,13 +390,28 @@ void BehaviorProgramming::on_actionSettings_triggered()
     ui->actionConnect->setEnabled(true);
 }
 
+void BehaviorProgramming::port_config_triggered()
+{
+    portConfigDialog->show();
+    portConfigDialog->exec();
+    updatePortList();
+}
 
+void BehaviorProgramming::port_test_triggered()
+{
+    ControllerAdapter::getInstance()->sendPortConfig(PortConfig::getInstance()->getSourceFile());
+    PortTestDialog * dialog = new PortTestDialog();
+    dialog->exec();
+}
 
 void BehaviorProgramming::serialDisconnected() {
     serialOpen = false;
     ui->actionConnect->setEnabled(true);
     ui->actionDisconnect->setEnabled(false);
+    portConfigAct->setEnabled(true);
+    portTestAct->setEnabled(false);
 }
+
 void BehaviorProgramming::createSerialToolbar()
 {
     QToolBar *serialToolBar = addToolBar(tr("Serial"));
@@ -395,18 +435,52 @@ void BehaviorProgramming::createSerialToolbar()
     serialToolBar->addAction(ui->actionSettings);
 }
 
+void BehaviorProgramming::createToolsToolbar() {
+    QMenu * toolsMenu = menuBar()->addMenu(tr("&Tools"));
+    QToolBar * toolsToolbar = addToolBar(tr("Tools"));
+
+    const QIcon portConfigIcon = QIcon(":/images/PortConfig.png");
+    portConfigAct = new QAction(portConfigIcon, tr("Configure Ports"), this);
+    portConfigAct->setStatusTip(tr("Set Up Port Output/Input Types and Characteristics"));
+    connect(portConfigAct, &QAction::triggered, this, &BehaviorProgramming::port_config_triggered);
+    toolsMenu->addAction(portConfigAct);
+    toolsToolbar->addAction(portConfigAct);
+
+    const QIcon portTestIcon = QIcon(":/images/PortTest.png");
+    portTestAct = new QAction(portTestIcon, tr("Test Port Configuration"));
+    portTestAct->setStatusTip(tr("Test Input and Output Ports"));
+    connect(portTestAct, &QAction::triggered, this, &BehaviorProgramming::port_test_triggered);
+    toolsMenu->addAction(portTestAct);
+    toolsToolbar->addAction(portTestAct);
+}
+
 
 void BehaviorProgramming::on_actionUpload_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, "Open the file");
-    QFile file(fileName);
-    QFile *f = &file;
-    ControllerAdapter::getInstance()->sendBehavior(f);
+    QString fileName = QFileDialog::getOpenFileName(this, "Open the file", WorkingDirectory::getPath(), tr("Animaniacs Behavior Model (*.bmo)"));
+    QFile* file = new QFile(fileName);
+    ControllerAdapter::getInstance()->transferBehavior(file);
 }
+
+void BehaviorProgramming::updatePortList() {
+    ui->inPortMenu->clear();
+    ui->inPortMenu->addItems(PortConfig::getInstance()->getPorts(inputType));
+}
+
 void BehaviorProgramming::clearMessages()
 {
     ui->analogErrorMessage->setHidden(true);
     ui->analogErrorMessage_2->setHidden(true);
     ui->textErrorMessage->setHidden(true);
     ui->triggerErrorMessage->setHidden(true);
+}
+
+
+void BehaviorProgramming::on_removeTriggerButton_clicked()
+{
+    QListWidgetItem *item = ui->triggerList->currentItem();
+    if(item != nullptr)
+    {
+         ui->triggerList->takeItem(ui->triggerList->row(item));
+    }
 }
