@@ -12,6 +12,10 @@ BehaviorProgramming::BehaviorProgramming(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->textFrame->setHidden(true);
+    ui->textErrorMessage->setHidden(true);
+    ui->analogErrorMessage->setHidden(true);
+    ui->triggerErrorMessage->setHidden(true);
+    ui->analogErrorMessage_2->setHidden(true);
     ui->digitalFrame->setHidden(true);
     ui->thresholdEdit_2->setDisabled(true);
     ui->thresholdEdit_3->setDisabled(true);
@@ -71,6 +75,10 @@ void BehaviorProgramming::on_actionNew_triggered()
     ui->thresholdEdit->setEnabled(true);
     ui->thresholdEdit_2->setDisabled(true);
     ui->thresholdEdit_3->setDisabled(true);
+    //ui->analogErrorMessage->clear();
+    //ui->analogErrorMessage_2->clear();
+    //ui->textErrorMessage->clear();
+    //ui->triggerErrorMessage->clear();
 
     setWindowTitle("Unsaved");
 }
@@ -210,6 +218,7 @@ void BehaviorProgramming::on_logicCombo_activated(const QString &arg1)
         ui->thresholdEdit->setEnabled(true);
         ui->thresholdEdit_2->setDisabled(true);
         ui->thresholdEdit_3->setDisabled(true);
+        //ui->analogErrorMessage_2->clear();
     }
 }
 
@@ -218,32 +227,140 @@ void BehaviorProgramming::on_addTrigger_clicked()
     QString trigger;
     if(ui->inTypeMenu->currentText() == "Text")
     {
-        trigger = ui->triggerNameEdit->text() +"," + ui->inTypeMenu->currentText() +
+        if(ui->commandText->text().length() < 100)
+                { trigger = ui->triggerNameEdit->text() +"," + ui->inTypeMenu->currentText() +
                 "," + ui->inPortMenu->currentText() +","+ ui->showNameMenu->currentText() +"," + ui->commandText->text() ;
+                 ui->triggerList->addItem(trigger);
+        }
+        else {
+            clearMessages();
+            ui->textErrorMessage->setHidden(false);
+        }
     }
     else if(ui->inTypeMenu->currentText() == "Digital")
     {
         trigger = ui->triggerNameEdit->text() +"," + ui->inTypeMenu->currentText() +
                "," + ui->inPortMenu->currentText()+"," + ui->showNameMenu->currentText() + "," + ui->digitalValue->currentText();
+            ui->triggerList->addItem(trigger);
     }
     else
     {
         if(ui->logicCombo->currentText() == "< X <")
         {
-            trigger = ui->triggerNameEdit->text() +"," + ui->inTypeMenu->currentText() +
+            if(ui->thresholdEdit_2->text().toInt()>-512 && ui->thresholdEdit_3->text().toInt()<512 && ui->thresholdEdit_2->text().toInt()<511 && ui->thresholdEdit_3->text().toInt()>-511)
+            {
+                if(ui->thresholdEdit_2->text().toInt() < ui->thresholdEdit_3->text().toInt())
+                {
+                    if(ui->triggerNameEdit->text().length() < 20)
+                {
+                   trigger = ui->triggerNameEdit->text() +"," + ui->inTypeMenu->currentText() +
                     "," + ui->inPortMenu->currentText() +"," +  ui->showNameMenu->currentText()
-                    + "," + ui->logicCombo->currentText() +"," + ui->thresholdEdit_2->text() + "," + ui->thresholdEdit_3->text();
+                     + "," + ui->logicCombo->currentText() +"," + ui->thresholdEdit_2->text() + "," + ui->thresholdEdit_3->text();
+                     ui->triggerList->addItem(trigger);
+                    }
+                     else {
+                        clearMessages();
+                         ui->triggerErrorMessage->setHidden(false);
+                     }
+                }
+                else {
+                        clearMessages();
+                        ui->analogErrorMessage_2->setHidden(false);
+                    }
+            }
+            else
+                {// TO DO: make it where you cant put in words
+                clearMessages();
+                ui->analogErrorMessage->setHidden(false);
+                }
         }
-        else
+        else if(ui->logicCombo->currentText() == "<")
         {
-            trigger = ui->triggerNameEdit->text() +"," + ui->inTypeMenu->currentText() +
-                    "," + ui->inPortMenu->currentText() +"," + ui->showNameMenu->currentText() + "," + ui->logicCombo->currentText()
-                    + ","   +  ui->thresholdEdit->text();
+            if(ui->thresholdEdit->text().toInt()>-512 && ui->thresholdEdit->text().toInt()<512)
+            {
+                if(ui->triggerNameEdit->text().length() < 20)
+                {
+                trigger = ui->triggerNameEdit->text() +"," + ui->inTypeMenu->currentText() +
+                "," + ui->inPortMenu->currentText() +"," +  ui->showNameMenu->currentText()
+                 + "," + ui->logicCombo->currentText() +"," + ui->thresholdEdit->text();
+                 ui->triggerList->addItem(trigger);
+                }
+                else {
+                    clearMessages();
+                    ui->triggerErrorMessage->setHidden(false);
+                }
+            }
+            else {
+                clearMessages();
+                ui->analogErrorMessage->setHidden(false);
+
+            }
+        }
+        else if(ui->logicCombo->currentText() == "=")
+        {
+            if(ui->thresholdEdit->text().toInt()>-512 && ui->thresholdEdit->text().toInt()<512)
+            {
+                if(ui->triggerNameEdit->text().length() < 20)
+                {
+                trigger = ui->triggerNameEdit->text() +"," + ui->inTypeMenu->currentText() +
+                "," + ui->inPortMenu->currentText() +"," +  ui->showNameMenu->currentText()
+                 + "," + ui->logicCombo->currentText() +"," + ui->thresholdEdit->text();
+                 ui->triggerList->addItem(trigger);
+                }
+                else {
+                    clearMessages();
+                    ui->triggerErrorMessage->setHidden(false);
+                }
+            }
+            else {
+                clearMessages();
+                ui->analogErrorMessage->setHidden(false);
+            }
+        }
+        else if(ui->logicCombo->currentText() == ">")
+        {
+            if(ui->thresholdEdit->text().toInt()>-512 && ui->thresholdEdit->text().toInt()<512)
+            {
+                if(ui->triggerNameEdit->text().length() < 20)
+                {
+                trigger = ui->triggerNameEdit->text() +"," + ui->inTypeMenu->currentText() +
+                "," + ui->inPortMenu->currentText() +"," +  ui->showNameMenu->currentText()
+                 + "," + ui->logicCombo->currentText() +"," + ui->thresholdEdit->text();
+                 ui->triggerList->addItem(trigger);
+                }
+                else {
+                    clearMessages();
+                    ui->triggerErrorMessage->setHidden(false);
+                }
+            }
+            else {
+                clearMessages();
+                ui->analogErrorMessage->setHidden(false);
+            }
+        }
+        else if(ui->logicCombo->currentText() == "!=")
+        {
+            if(ui->thresholdEdit->text().toInt()>-512 && ui->thresholdEdit->text().toInt()<512)
+            {
+                if(ui->triggerNameEdit->text().length() < 20)
+                {
+                trigger = ui->triggerNameEdit->text() +"," + ui->inTypeMenu->currentText() +
+                "," + ui->inPortMenu->currentText() +"," +  ui->showNameMenu->currentText()
+                 + "," + ui->logicCombo->currentText() +"," + ui->thresholdEdit->text();
+                 ui->triggerList->addItem(trigger);
+                }
+                else {
+                    clearMessages();
+                    ui->triggerErrorMessage->setHidden(false);
+                }
+            }
+            else {
+                clearMessages();
+                ui->analogErrorMessage->setHidden(false);
+            }
         }
     }
-    ui->triggerList->addItem(trigger);
 }
-
 void BehaviorProgramming::on_actionConnect_triggered()
 {
     SerialSettingsDialog::Settings settings = settingsDialog->settings();
@@ -350,6 +467,14 @@ void BehaviorProgramming::updatePortList() {
     ui->inPortMenu->addItems(PortConfig::getInstance()->getPorts(inputType));
 }
 
+void BehaviorProgramming::clearMessages()
+{
+    ui->analogErrorMessage->setHidden(true);
+    ui->analogErrorMessage_2->setHidden(true);
+    ui->textErrorMessage->setHidden(true);
+    ui->triggerErrorMessage->setHidden(true);
+}
+
 
 void BehaviorProgramming::on_removeTriggerButton_clicked()
 {
@@ -358,5 +483,4 @@ void BehaviorProgramming::on_removeTriggerButton_clicked()
     {
          ui->triggerList->takeItem(ui->triggerList->row(item));
     }
-
 }

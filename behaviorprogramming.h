@@ -58,6 +58,7 @@ private:
     void createSerialToolbar();
     void createToolsToolbar();
     void serialDisconnected(); //To be called if serial is disconnected for any reason
+    void clearMessages();
 
     void updatePortList();
 
