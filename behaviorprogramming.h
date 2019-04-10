@@ -48,6 +48,7 @@ private:
 
     void createSerialToolbar();
     void serialDisconnected(); //To be called if serial is disconnected for any reason
+    void clearMessages();
 };
 
     #endif // BEHAVIORPROGRAMMIN_H
