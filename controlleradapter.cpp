@@ -261,6 +261,8 @@ int ControllerAdapter::sendFile(SerialTxDaemon::SignalType signalType, QFile *fi
 {
     if(filename == "")
         filename = getFilename(file);
+    else
+        filename = padFilename(filename);
     QByteArray * filedata = readFile(file);
     if(filename == "" || filedata->length() == 0)
         return 1;
