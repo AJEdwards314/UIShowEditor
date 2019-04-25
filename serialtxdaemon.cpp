@@ -79,6 +79,7 @@ void SerialTxDaemon::run()
     } else if(signalType == READ_PORT || signalType == DRIVE_PORT) {
         runNoReply();
     } else {
+        qInfo() << message;
         serialPort->write(message);
         serialPort->flush();
 
